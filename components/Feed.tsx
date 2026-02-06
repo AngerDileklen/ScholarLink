@@ -1,20 +1,37 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MOCK_POSTS, MOCK_SCHOLARS } from '../services/mockData';
 import { Post, ScholarProfile, CorporateProfile } from '../types';
+import { useAuth } from '../context/AuthContext';
+import { CreatePostModal } from './CreatePostModal';
 import { 
   Heart, MessageCircle, Share2, Send, Image as ImageIcon, Link as LinkIcon, 
-  MoreHorizontal, Verified, Building2, GraduationCap, TrendingUp, UserPlus 
+  MoreHorizontal, Verified, TrendingUp, UserPlus, GraduationCap 
 } from 'lucide-react';
-import { Badge } from './Badge';
 
 interface FeedProps {
   onSignupRequest: () => void;
 }
 
 export const Feed: React.FC<FeedProps> = ({ onSignupRequest }) => {
+  const { user, isAuthenticated } = useAuth();
+  const [posts, setPosts] = useState<Post[]>(MOCK_POSTS);
+  const [isPostModalOpen, setIsPostModalOpen] = useState(false);
+
   // Helper to distinguish types (Type Guard)
   const isCorporate = (author: ScholarProfile | CorporateProfile): author is CorporateProfile => {
     return (author as CorporateProfile).industry !== undefined;
+  };
+
+  const handleCreatePost = () => {
+    if (!isAuthenticated) {
+      onSignupRequest();
+    } else {
+      setIsPostModalOpen(true);
+    }
+  };
+
+  const handleNewPostSubmit = (newPost: Post) => {
+    setPosts([newPost, ...posts]);
   };
 
   return (
@@ -22,32 +39,47 @@ export const Feed: React.FC<FeedProps> = ({ onSignupRequest }) => {
       
       {/* LEFT COLUMN: Identity / Sidebar */}
       <div className="hidden lg:block space-y-4">
-        {/* Guest Identity Card */}
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden sticky top-24">
           <div className="h-24 bg-gradient-to-r from-brand-600 to-brand-800"></div>
           <div className="px-6 pb-6 text-center">
-            <div className="w-20 h-20 bg-slate-100 rounded-full border-4 border-white mx-auto -mt-10 flex items-center justify-center text-slate-300">
-               <GraduationCap className="w-10 h-10" />
-            </div>
-            <h3 className="mt-3 font-bold text-slate-900 text-lg">Welcome, Guest!</h3>
-            <p className="text-sm text-slate-500 mt-1 mb-4">
-              Join the global network of scholars and industry partners.
-            </p>
-            <button 
-              onClick={onSignupRequest}
-              className="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-2 rounded-lg transition-colors shadow-sm"
-            >
-              Sign Up / Login
-            </button>
+            {isAuthenticated && user ? (
+              <>
+                 <img 
+                   src={user.avatarUrl} 
+                   alt={user.name} 
+                   className="w-20 h-20 rounded-full border-4 border-white mx-auto -mt-10 object-cover bg-white" 
+                 />
+                 <h3 className="mt-3 font-bold text-slate-900 text-lg">{user.name}</h3>
+                 <p className="text-sm text-slate-500 mt-1 mb-4 truncate">
+                   {isCorporate(user) ? user.industry : user.title}
+                 </p>
+              </>
+            ) : (
+              <>
+                <div className="w-20 h-20 bg-slate-100 rounded-full border-4 border-white mx-auto -mt-10 flex items-center justify-center text-slate-300">
+                  <GraduationCap className="w-10 h-10" />
+                </div>
+                <h3 className="mt-3 font-bold text-slate-900 text-lg">Welcome, Guest!</h3>
+                <p className="text-sm text-slate-500 mt-1 mb-4">
+                  Join the global network of scholars and industry partners.
+                </p>
+                <button 
+                  onClick={onSignupRequest}
+                  className="w-full bg-brand-600 hover:bg-brand-700 text-white font-medium py-2 rounded-lg transition-colors shadow-sm"
+                >
+                  Sign Up / Login
+                </button>
+              </>
+            )}
           </div>
           <div className="border-t border-slate-100 px-6 py-4 bg-slate-50">
              <div className="flex justify-between text-sm mb-2">
                 <span className="text-slate-500">Profile Views</span>
-                <span className="font-medium text-slate-400">--</span>
+                <span className="font-medium text-slate-400">{isAuthenticated ? '1,402' : '--'}</span>
              </div>
              <div className="flex justify-between text-sm">
                 <span className="text-slate-500">Connections</span>
-                <span className="font-medium text-slate-400">--</span>
+                <span className="font-medium text-slate-400">{isAuthenticated ? '489' : '--'}</span>
              </div>
           </div>
         </div>
@@ -59,9 +91,14 @@ export const Feed: React.FC<FeedProps> = ({ onSignupRequest }) => {
         {/* Create Post Widget */}
         <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
           <div className="flex gap-4">
-            <div className="w-10 h-10 rounded-full bg-slate-100 flex-shrink-0"></div>
+            {isAuthenticated && user ? (
+              <img src={user.avatarUrl} alt="Me" className="w-10 h-10 rounded-full object-cover flex-shrink-0" />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-slate-100 flex-shrink-0"></div>
+            )}
+            
             <div 
-              onClick={onSignupRequest}
+              onClick={handleCreatePost}
               className="flex-grow bg-slate-50 rounded-full border border-slate-200 px-4 flex items-center text-slate-500 cursor-pointer hover:bg-slate-100 transition-colors"
             >
               Start a post, share a paper, or update your project...
@@ -69,16 +106,16 @@ export const Feed: React.FC<FeedProps> = ({ onSignupRequest }) => {
           </div>
           <div className="mt-3 flex justify-between items-center pt-3 border-t border-slate-100">
              <div className="flex gap-4">
-                <button onClick={onSignupRequest} className="flex items-center gap-2 text-slate-500 hover:text-brand-600 text-sm font-medium">
+                <button onClick={handleCreatePost} className="flex items-center gap-2 text-slate-500 hover:text-brand-600 text-sm font-medium">
                    <ImageIcon className="w-4 h-4 text-blue-500" /> Media
                 </button>
-                <button onClick={onSignupRequest} className="flex items-center gap-2 text-slate-500 hover:text-brand-600 text-sm font-medium">
+                <button onClick={handleCreatePost} className="flex items-center gap-2 text-slate-500 hover:text-brand-600 text-sm font-medium">
                    <LinkIcon className="w-4 h-4 text-amber-500" /> Link Paper
                 </button>
              </div>
              <button 
-               onClick={onSignupRequest} 
-               className="bg-slate-100 text-slate-400 font-medium px-4 py-1.5 rounded-lg text-sm cursor-not-allowed"
+               onClick={handleCreatePost}
+               className={`${isAuthenticated ? 'bg-brand-600 text-white hover:bg-brand-700' : 'bg-slate-100 text-slate-400 cursor-not-allowed'} font-medium px-4 py-1.5 rounded-lg text-sm transition-colors`}
              >
                Post
              </button>
@@ -86,7 +123,7 @@ export const Feed: React.FC<FeedProps> = ({ onSignupRequest }) => {
         </div>
 
         {/* Posts List */}
-        {MOCK_POSTS.map((post) => (
+        {posts.map((post) => (
           <div key={post.id} className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Post Header */}
             <div className="p-4 flex gap-3 items-start">
@@ -172,7 +209,6 @@ export const Feed: React.FC<FeedProps> = ({ onSignupRequest }) => {
 
       {/* RIGHT COLUMN: Widgets */}
       <div className="hidden lg:block space-y-6">
-         {/* Trending */}
          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
             <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
                <TrendingUp className="w-4 h-4 text-slate-500" /> Trending Topics
@@ -187,7 +223,6 @@ export const Feed: React.FC<FeedProps> = ({ onSignupRequest }) => {
             </div>
          </div>
 
-         {/* Suggested Scholars */}
          <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5">
             <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
                <UserPlus className="w-4 h-4 text-slate-500" /> Suggested Scholars
@@ -215,6 +250,11 @@ export const Feed: React.FC<FeedProps> = ({ onSignupRequest }) => {
          </div>
       </div>
 
+      <CreatePostModal 
+        isOpen={isPostModalOpen} 
+        onClose={() => setIsPostModalOpen(false)} 
+        onSubmit={handleNewPostSubmit}
+      />
     </div>
   );
 };
