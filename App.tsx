@@ -8,6 +8,9 @@ import { Dashboard } from './components/Dashboard';
 import { OpportunitiesBoard } from './components/OpportunitiesBoard';
 import { Feed } from './components/Feed';
 import { AuthModal } from './components/AuthModal';
+import { ChatWidget } from './components/ChatWidget';
+import { PaywallModal } from './components/PaywallModal';
+import { CreatePostModal } from './components/CreatePostModal';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { MOCK_SCHOLARS } from './services/mockData';
 import { ScholarProfile, SearchFilters, UserRole } from './types';
@@ -15,7 +18,7 @@ import { calculateDistanceKm } from './utils/geo';
 import { GraduationCap, Users, Globe2, Home, Map, Briefcase, LogOut } from 'lucide-react';
 
 const AppContent: React.FC = () => {
-  const { isAuthenticated, user, logout } = useAuth();
+  const { isAuthenticated, user, logout, role } = useAuth();
   
   // Navigation State
   const [view, setView] = useState<'feed' | 'discover' | 'dashboard' | 'opportunities' | 'profile'>('feed');
@@ -32,6 +35,10 @@ const AppContent: React.FC = () => {
   const [isConnectOpen, setIsConnectOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'signup'>('login');
+  
+  // Paywall & Post State
+  const [isPaywallOpen, setIsPaywallOpen] = useState(false);
+  const [isGrantPostModalOpen, setIsGrantPostModalOpen] = useState(false);
 
   // Auth Guard
   const requireAuth = (action: () => void) => {
@@ -93,6 +100,30 @@ const AppContent: React.FC = () => {
       setIsLoading(false);
     }, 600);
   };
+
+  // Paywall Logic
+  const handlePostOpportunityClick = () => {
+    // In a real app, check if user has active subscription. 
+    // Here we simulate checking and finding no subscription.
+    setIsPaywallOpen(true);
+  };
+
+  const handlePaywallSuccess = () => {
+    setIsPaywallOpen(false);
+    // Simulate slight delay before opening the post modal
+    setTimeout(() => {
+      setIsGrantPostModalOpen(true);
+    }, 300);
+  };
+
+  const handleGrantPostSubmit = (post: any) => {
+    console.log("New Grant Created:", post);
+    setIsGrantPostModalOpen(false);
+    // In real app, we would add this to the grants list
+  };
+
+  // Determine effective role for UI logic (default to student if public)
+  const effectiveRole = isAuthenticated && role ? role : 'student';
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
@@ -165,7 +196,10 @@ const AppContent: React.FC = () => {
         
         {view === 'opportunities' && (
            <div className="max-w-6xl mx-auto px-4 py-8 w-full">
-              <OpportunitiesBoard role={isAuthenticated ? 'corporate' : 'student'} />
+              <OpportunitiesBoard 
+                role={effectiveRole} 
+                onPostClick={handlePostOpportunityClick}
+              />
            </div>
         )}
         
@@ -202,13 +236,28 @@ const AppContent: React.FC = () => {
         )}
       </div>
 
+      {/* Global Widgets */}
+      {isAuthenticated && <ChatWidget />}
+
       {/* Modals */}
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} defaultTab={authMode} />
+      
       {selectedScholar && (
-        <>
-          <ConnectModal scholar={selectedScholar} isOpen={isConnectOpen} onClose={() => setIsConnectOpen(false)} />
-        </>
+        <ConnectModal scholar={selectedScholar} isOpen={isConnectOpen} onClose={() => setIsConnectOpen(false)} />
       )}
+
+      {/* Paywall & Posting Modals */}
+      <PaywallModal 
+        isOpen={isPaywallOpen} 
+        onClose={() => setIsPaywallOpen(false)} 
+        onUpgrade={handlePaywallSuccess} 
+      />
+      
+      <CreatePostModal 
+        isOpen={isGrantPostModalOpen} 
+        onClose={() => setIsGrantPostModalOpen(false)} 
+        onSubmit={handleGrantPostSubmit}
+      />
     </div>
   );
 };
