@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScholarProfile } from '../types';
 import { Badge } from './Badge';
-import { MapPin, Building, BookOpen, Mail, Link as LinkIcon, Lock, X } from 'lucide-react';
+import { MapPin, Building, BookOpen, Mail, Link as LinkIcon, Lock, X, Briefcase, Zap } from 'lucide-react';
 
 interface ProfileDetailProps {
   scholar: ScholarProfile;
@@ -46,7 +46,19 @@ export const ProfileDetail: React.FC<ProfileDetailProps> = ({ scholar, isOpen, o
                alt={scholar.name} 
              />
              <div>
-                <h2 className="text-2xl font-bold text-slate-900">{scholar.name}</h2>
+                <div className="flex items-center gap-2 mb-1">
+                  <h2 className="text-2xl font-bold text-slate-900">{scholar.name}</h2>
+                  {scholar.openToIndustry && (
+                    <div className="hidden sm:block">
+                      <Badge 
+                        label="Open to Industry" 
+                        variant="info" 
+                        icon={<Briefcase className="w-3 h-3" />} 
+                      />
+                    </div>
+                  )}
+                </div>
+                
                 <p className="text-lg text-slate-600 font-medium">{scholar.title}</p>
                 <div className="flex items-center gap-2 mt-2 text-slate-500 text-sm">
                    <Building className="w-4 h-4" />
@@ -56,6 +68,17 @@ export const ProfileDetail: React.FC<ProfileDetailProps> = ({ scholar, isOpen, o
                    <MapPin className="w-4 h-4" />
                    {scholar.location.city}, {scholar.location.country}
                 </div>
+
+                {/* Mobile only badge placement */}
+                {scholar.openToIndustry && (
+                   <div className="mt-3 sm:hidden">
+                      <Badge 
+                        label="Open to Industry" 
+                        variant="info" 
+                        icon={<Briefcase className="w-3 h-3" />} 
+                      />
+                   </div>
+                )}
              </div>
           </div>
           
@@ -90,6 +113,23 @@ export const ProfileDetail: React.FC<ProfileDetailProps> = ({ scholar, isOpen, o
                 ))}
              </div>
           </section>
+
+          {/* New Active Projects Section */}
+          {scholar.activeProjects && scholar.activeProjects.length > 0 && (
+            <section>
+              <h3 className="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2">
+                <Zap className="w-5 h-5 text-amber-500" />
+                Current Active Projects
+              </h3>
+              <div className="space-y-3">
+                {scholar.activeProjects.map((project, i) => (
+                  <div key={i} className="p-4 bg-amber-50 border border-amber-100 rounded-lg">
+                    <p className="text-amber-900 font-medium text-sm">{project}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
 
           <section>
              <h3 className="text-lg font-bold text-slate-900 mb-3">Recent Publications</h3>

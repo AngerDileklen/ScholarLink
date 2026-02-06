@@ -1,3 +1,5 @@
+import React from 'react';
+
 export interface Coordinates {
   lat: number;
   lng: number;
@@ -30,6 +32,33 @@ export interface ScholarProfile {
   // Extended fields for Profile View
   email?: string; // Private/Blurred
   recentPublications?: string[];
+  // Phase 1 Expansion
+  openToIndustry: boolean;
+  activeProjects: string[];
+}
+
+export interface CorporateProfile {
+  id: string;
+  name: string;
+  industry: string;
+  description: string;
+  location: {
+    city: string;
+    country: string;
+  };
+  websiteUrl: string;
+  avatarUrl: string;
+}
+
+export interface GrantOpportunity {
+  id: string;
+  title: string;
+  organizationName: string;
+  description: string;
+  amount: string;
+  deadline: string;
+  tags: string[];
+  applyLink: string;
 }
 
 export interface SearchFilters {
@@ -40,11 +69,31 @@ export interface SearchFilters {
   onlyAcceptingStudents: boolean;
 }
 
-export type UserRole = 'professor' | 'student';
+export type UserRole = 'professor' | 'student' | 'corporate';
 
 export interface DashboardStat {
   label: string;
   value: string | number;
   trend?: string;
-  icon?: any;
+  icon?: React.ElementType;
+}
+
+// Phase 4: Social Feed Types
+export type PostType = 'paper_share' | 'project_update' | 'grant_post';
+
+export interface Post {
+  id: string;
+  author: ScholarProfile | CorporateProfile;
+  type: PostType;
+  content: string;
+  timestamp: string;
+  metrics: {
+    likes: number;
+    comments: number;
+    shares?: number;
+  };
+  relatedLink?: {
+    title: string;
+    url: string;
+  };
 }
