@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScholarProfile } from '../types';
 import { Badge } from './Badge';
-import { MapPin, Building, BookOpen, Mail, Link as LinkIcon, Lock, X, Briefcase, Zap } from 'lucide-react';
+import { MapPin, Building, BookOpen, Mail, Link as LinkIcon, Lock, X, Briefcase, Zap, ArrowUpRight } from 'lucide-react';
 
 interface ProfileDetailProps {
   scholar: ScholarProfile;
@@ -24,7 +24,7 @@ export const ProfileDetail: React.FC<ProfileDetailProps> = ({ scholar, isOpen, o
     <div className="fixed inset-0 z-40 flex justify-end">
       {/* Backdrop */}
       <div 
-        className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm"
+        className="absolute inset-0 bg-slate-900/20 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
 
@@ -32,7 +32,7 @@ export const ProfileDetail: React.FC<ProfileDetailProps> = ({ scholar, isOpen, o
       <div className="relative w-full max-w-2xl bg-white h-full shadow-2xl overflow-y-auto animate-in slide-in-from-right duration-300">
         <button 
           onClick={onClose}
-          className="absolute top-4 right-4 bg-white/80 p-2 rounded-full hover:bg-slate-100 z-10"
+          className="absolute top-4 right-4 bg-white/80 p-2 rounded-full hover:bg-slate-100 z-10 transition-colors"
         >
           <X className="w-6 h-6 text-slate-500" />
         </button>
@@ -42,7 +42,7 @@ export const ProfileDetail: React.FC<ProfileDetailProps> = ({ scholar, isOpen, o
           <div className="flex gap-6 items-start">
              <img 
                src={scholar.avatarUrl} 
-               className="w-24 h-24 rounded-xl border-4 border-white shadow-sm"
+               className="w-24 h-24 rounded-xl border-4 border-white shadow-sm object-cover"
                alt={scholar.name} 
              />
              <div>
@@ -114,7 +114,7 @@ export const ProfileDetail: React.FC<ProfileDetailProps> = ({ scholar, isOpen, o
              </div>
           </section>
 
-          {/* New Active Projects Section */}
+          {/* Active Projects Section */}
           {scholar.activeProjects && scholar.activeProjects.length > 0 && (
             <section>
               <h3 className="text-lg font-bold text-slate-900 mb-3 flex items-center gap-2">
@@ -123,8 +123,22 @@ export const ProfileDetail: React.FC<ProfileDetailProps> = ({ scholar, isOpen, o
               </h3>
               <div className="space-y-3">
                 {scholar.activeProjects.map((project, i) => (
-                  <div key={i} className="p-4 bg-amber-50 border border-amber-100 rounded-lg">
-                    <p className="text-amber-900 font-medium text-sm">{project}</p>
+                  <div 
+                    key={i} 
+                    className="group p-4 bg-white border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-amber-200 transition-all duration-200"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className="p-2 bg-amber-50 text-amber-600 rounded-lg group-hover:bg-amber-100 transition-colors">
+                        <Zap className="w-4 h-4" />
+                      </div>
+                      <div className="flex-1">
+                         <div className="flex justify-between items-start">
+                           <p className="text-slate-900 font-medium text-sm leading-snug">{project}</p>
+                           <ArrowUpRight className="w-4 h-4 text-slate-300 group-hover:text-amber-500 transition-colors" />
+                         </div>
+                         <p className="text-xs text-slate-500 mt-1">Status: Active • Funding Secured</p>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>

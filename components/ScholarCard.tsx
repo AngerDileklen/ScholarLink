@@ -19,7 +19,8 @@ export const ScholarCard: React.FC<ScholarCardProps> = ({ scholar, distanceKm, o
           <img
             src={scholar.avatarUrl}
             alt={scholar.name}
-            className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-sm"
+            className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-sm cursor-pointer"
+            onClick={() => onViewProfile(scholar)}
           />
           {scholar.verified && (
             <div className="absolute bottom-0 right-0 bg-white rounded-full p-1 shadow-sm" title="Verified Affiliation">
@@ -34,7 +35,12 @@ export const ScholarCard: React.FC<ScholarCardProps> = ({ scholar, distanceKm, o
         <div>
           <div className="flex justify-between items-start">
             <div>
-              <h3 className="text-xl font-bold text-slate-900">{scholar.name}</h3>
+              <h3 
+                className="text-xl font-bold text-slate-900 cursor-pointer hover:underline"
+                onClick={() => onViewProfile(scholar)}
+              >
+                {scholar.name}
+              </h3>
               <p className="text-sm text-slate-600 font-medium">{scholar.title}</p>
               <div className="flex items-center mt-1 text-slate-500 text-sm">
                 <GraduationCap className="w-4 h-4 mr-1" />
@@ -100,15 +106,9 @@ export const ScholarCard: React.FC<ScholarCardProps> = ({ scholar, distanceKm, o
           <div className="flex gap-3">
              <button 
                onClick={() => onViewProfile(scholar)}
-               className="text-sm font-medium text-slate-600 hover:text-slate-900 px-3 py-2"
+               className="text-sm font-medium text-slate-600 hover:text-slate-900 px-3 py-2 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
              >
-               View Profile
-             </button>
-             <button 
-               onClick={() => onConnect(scholar)}
-               className="text-sm font-medium bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg shadow-sm transition-all"
-             >
-               Connect
+               View Full Profile
              </button>
           </div>
         </div>

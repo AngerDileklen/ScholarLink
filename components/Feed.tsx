@@ -10,9 +10,10 @@ import {
 
 interface FeedProps {
   onSignupRequest: () => void;
+  onViewProfile: (scholar: ScholarProfile) => void;
 }
 
-export const Feed: React.FC<FeedProps> = ({ onSignupRequest }) => {
+export const Feed: React.FC<FeedProps> = ({ onSignupRequest, onViewProfile }) => {
   const { user, isAuthenticated } = useAuth();
   const [posts, setPosts] = useState<Post[]>(MOCK_POSTS);
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
@@ -34,6 +35,12 @@ export const Feed: React.FC<FeedProps> = ({ onSignupRequest }) => {
     setPosts([newPost, ...posts]);
   };
 
+  const handleProfileClick = (author: ScholarProfile | CorporateProfile) => {
+    if (!isCorporate(author)) {
+      onViewProfile(author);
+    }
+  };
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-4 gap-6">
       
@@ -47,9 +54,15 @@ export const Feed: React.FC<FeedProps> = ({ onSignupRequest }) => {
                  <img 
                    src={user.avatarUrl} 
                    alt={user.name} 
-                   className="w-20 h-20 rounded-full border-4 border-white mx-auto -mt-10 object-cover bg-white" 
+                   onClick={() => handleProfileClick(user)}
+                   className="w-20 h-20 rounded-full border-4 border-white mx-auto -mt-10 object-cover bg-white cursor-pointer hover:opacity-90 transition-opacity" 
                  />
-                 <h3 className="mt-3 font-bold text-slate-900 text-lg">{user.name}</h3>
+                 <h3 
+                    onClick={() => handleProfileClick(user)}
+                    className="mt-3 font-bold text-slate-900 text-lg cursor-pointer hover:underline"
+                  >
+                    {user.name}
+                  </h3>
                  <p className="text-sm text-slate-500 mt-1 mb-4 truncate">
                    {isCorporate(user) ? user.industry : user.title}
                  </p>
@@ -130,12 +143,16 @@ export const Feed: React.FC<FeedProps> = ({ onSignupRequest }) => {
                <img 
                  src={post.author.avatarUrl} 
                  alt={post.author.name} 
-                 className="w-12 h-12 rounded-full object-cover border border-slate-100"
+                 onClick={() => handleProfileClick(post.author)}
+                 className="w-12 h-12 rounded-full object-cover border border-slate-100 cursor-pointer"
                />
                <div className="flex-grow">
                   <div className="flex justify-between items-start">
                      <div>
-                        <h4 className="font-bold text-slate-900 flex items-center gap-1">
+                        <h4 
+                          onClick={() => handleProfileClick(post.author)}
+                          className="font-bold text-slate-900 flex items-center gap-1 cursor-pointer hover:underline"
+                        >
                           {post.author.name}
                           {isCorporate(post.author) && <Verified className="w-3 h-3 text-blue-500 fill-blue-50" />}
                         </h4>
@@ -230,9 +247,19 @@ export const Feed: React.FC<FeedProps> = ({ onSignupRequest }) => {
             <div className="space-y-4">
                {MOCK_SCHOLARS.slice(0, 3).map(scholar => (
                   <div key={scholar.id} className="flex items-center gap-3">
-                     <img src={scholar.avatarUrl} alt={scholar.name} className="w-10 h-10 rounded-full object-cover" />
+                     <img 
+                      src={scholar.avatarUrl} 
+                      alt={scholar.name} 
+                      onClick={() => onViewProfile(scholar)}
+                      className="w-10 h-10 rounded-full object-cover cursor-pointer" 
+                    />
                      <div className="flex-grow min-w-0">
-                        <p className="text-sm font-semibold text-slate-900 truncate">{scholar.name}</p>
+                        <p 
+                          onClick={() => onViewProfile(scholar)}
+                          className="text-sm font-semibold text-slate-900 truncate cursor-pointer hover:underline"
+                        >
+                          {scholar.name}
+                        </p>
                         <p className="text-xs text-slate-500 truncate">{scholar.university.name}</p>
                      </div>
                      <button 

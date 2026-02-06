@@ -16,7 +16,7 @@ export const MOCK_SCHOLARS: ScholarProfile[] = [
       coordinates: { lat: 45.5017, lng: -73.5673 }
     },
     researchInterests: ['Deep Learning', 'Generative Models', 'Reinforcement Learning', 'AI Safety'],
-    bio: 'Focusing on the intersection of biological inspiration and deep learning architectures.',
+    bio: 'I am driven by the quest to understand intelligence through the synthesis of artificial neural networks. My lab focuses on bridging the gap between biological constraints and machine learning efficiency.',
     acceptingStudents: true,
     fundingAvailable: true,
     avatarUrl: 'https://picsum.photos/id/1005/200/200',
@@ -24,7 +24,16 @@ export const MOCK_SCHOLARS: ScholarProfile[] = [
     hIndex: 85,
     verified: true,
     openToIndustry: true,
-    activeProjects: ['Consciousness Priors in AI', 'Causal Representation Learning']
+    activeProjects: ['Consciousness Priors in AI', 'Causal Representation Learning'],
+    education: [
+      { id: 'e1', degree: 'PhD in Computer Science', institution: 'MIT', yearStart: '1998', yearEnd: '2002' },
+      { id: 'e2', degree: 'MSc in Artificial Intelligence', institution: 'University of Toronto', yearStart: '1996', yearEnd: '1998' }
+    ],
+    papers: [
+      { id: 'pa1', title: 'Attention Is All You Need (Revisited)', journal: 'NeurIPS', year: 2023, citations: 450 },
+      { id: 'pa2', title: 'Deep Learning in Low-Resource Settings', journal: 'ICML', year: 2022, citations: 120 },
+      { id: 'pa3', title: 'Biological Constraints in Neural Networks', journal: 'Nature Machine Intelligence', year: 2021, citations: 89 }
+    ]
   },
   {
     id: '2',
@@ -38,7 +47,7 @@ export const MOCK_SCHOLARS: ScholarProfile[] = [
       coordinates: { lat: 48.8566, lng: 2.3522 }
     },
     researchInterests: ['Medieval Iconography', 'Curatorial Studies', 'European History', 'Museum Ethics'],
-    bio: 'Exploring the narrative structures in 14th-century frescos and their modern preservation.',
+    bio: 'Preserving the past through the lens of modern digital humanities. I specialize in the narrative structures of 14th-century frescos.',
     acceptingStudents: true,
     fundingAvailable: false,
     avatarUrl: 'https://picsum.photos/id/1011/200/200',
@@ -46,7 +55,14 @@ export const MOCK_SCHOLARS: ScholarProfile[] = [
     hIndex: 24,
     verified: true,
     openToIndustry: false,
-    activeProjects: ['Digital Preservation of Gothic Frescos']
+    activeProjects: ['Digital Preservation of Gothic Frescos'],
+    education: [
+      { id: 'e3', degree: 'PhD in Art History', institution: 'École du Louvre', yearStart: '2005', yearEnd: '2009' }
+    ],
+    papers: [
+      { id: 'pa4', title: 'The Painted Word: Medieval Frescos', journal: 'Art History Journal', year: 2018, citations: 45 },
+      { id: 'pa5', title: 'Digital Archiving of Fragile Manuscripts', journal: 'Journal of Cultural Heritage', year: 2020, citations: 32 }
+    ]
   },
   {
     id: '3',
@@ -60,7 +76,7 @@ export const MOCK_SCHOLARS: ScholarProfile[] = [
       coordinates: { lat: 40.7128, lng: -74.0060 }
     },
     researchInterests: ['CRISPR', 'Gene Editing', 'Bioinformatics', 'Molecular Biology'],
-    bio: 'Developing novel delivery mechanisms for gene therapies in non-liver tissues.',
+    bio: 'Engineering the next generation of gene therapies. We focus on non-liver tissue delivery for CRISPR systems.',
     acceptingStudents: false,
     fundingAvailable: true, // Has funding for postdocs maybe, but not students
     avatarUrl: 'https://picsum.photos/id/1025/200/200',
@@ -68,7 +84,15 @@ export const MOCK_SCHOLARS: ScholarProfile[] = [
     hIndex: 62,
     verified: true,
     openToIndustry: true,
-    activeProjects: ['Lipid Nanoparticle Delivery Systems', 'Cas9 Off-target Detection']
+    activeProjects: ['Lipid Nanoparticle Delivery Systems', 'Cas9 Off-target Detection'],
+    education: [
+      { id: 'e4', degree: 'PhD in Biochemistry', institution: 'Stanford University', yearStart: '2010', yearEnd: '2014' },
+      { id: 'e5', degree: 'BS in Biology', institution: 'UC Berkeley', yearStart: '2006', yearEnd: '2010' }
+    ],
+    papers: [
+      { id: 'pa6', title: 'High-efficiency LNP delivery', journal: 'Nature Biotechnology', year: 2024, citations: 156 },
+      { id: 'pa7', title: 'Off-target effects in Cas9', journal: 'Science', year: 2021, citations: 890 }
+    ]
   },
   {
     id: '4',
@@ -90,7 +114,13 @@ export const MOCK_SCHOLARS: ScholarProfile[] = [
     hIndex: 12,
     verified: false,
     openToIndustry: true,
-    activeProjects: ['Spiking Neural Networks for Prosthetics']
+    activeProjects: ['Spiking Neural Networks for Prosthetics'],
+    education: [
+       { id: 'e6', degree: 'PhD in Neuroscience', institution: 'University of Oxford', yearStart: '2015', yearEnd: '2019' }
+    ],
+    papers: [
+       { id: 'pa8', title: 'Plasticity in SNNs', journal: 'Neural Computation', year: 2022, citations: 45 }
+    ]
   }
 ];
 

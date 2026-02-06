@@ -10,6 +10,23 @@ export interface University {
   logoUrl?: string; // Placeholder for university logo
 }
 
+export interface Education {
+  id: string;
+  degree: string;
+  institution: string;
+  yearStart: string;
+  yearEnd: string;
+}
+
+export interface Paper {
+  id: string;
+  title: string;
+  journal: string;
+  year: number;
+  citations: number;
+  url?: string;
+}
+
 export interface ScholarProfile {
   id: string;
   name: string;
@@ -21,8 +38,8 @@ export interface ScholarProfile {
     country: string;
     coordinates: Coordinates;
   };
-  researchInterests: string[];
-  bio: string;
+  researchInterests: string[]; // These will serve as AI Keywords
+  bio: string; // "Ethos" / Summary
   acceptingStudents: boolean;
   fundingAvailable: boolean;
   avatarUrl: string;
@@ -30,8 +47,10 @@ export interface ScholarProfile {
   hIndex: number;
   verified: boolean;
   // Extended fields for Profile View
-  email?: string; // Private/Blurred
-  recentPublications?: string[];
+  email?: string;
+  recentPublications?: string[]; // Legacy simple list
+  papers?: Paper[]; // Detailed list for ResearchGate view
+  education?: Education[];
   // Phase 1 Expansion
   openToIndustry: boolean;
   activeProjects: string[];
