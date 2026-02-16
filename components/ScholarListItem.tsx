@@ -13,7 +13,7 @@ export const ScholarListItem: React.FC<ScholarListItemProps> = ({ scholar, isSel
     <div
       onClick={onClick}
       className={`p-4 border-b border-slate-200 cursor-pointer transition-colors hover:bg-slate-50 relative ${
-        isSelected ? 'bg-brand-50 border-l-4 border-l-brand-600' : 'border-l-4 border-l-transparent bg-white'
+        isSelected ? 'bg-primary/5 border-l-4 border-l-primary' : 'border-l-4 border-l-transparent bg-white'
       }`}
     >
       <div className="flex gap-3 items-start">
@@ -24,7 +24,7 @@ export const ScholarListItem: React.FC<ScholarListItemProps> = ({ scholar, isSel
         />
         <div className="min-w-0 flex-1">
           <div className="flex justify-between items-start">
-            <h3 className={`font-semibold text-base truncate ${isSelected ? 'text-brand-900' : 'text-slate-900'}`}>
+            <h3 className={`font-semibold text-base truncate ${isSelected ? 'text-primary' : 'text-slate-900'}`}>
               {scholar.name}
               {scholar.verified && (
                  <CheckCircle2 className="w-3 h-3 text-blue-500 fill-blue-50 inline ml-1 align-baseline" />
@@ -32,7 +32,7 @@ export const ScholarListItem: React.FC<ScholarListItemProps> = ({ scholar, isSel
             </h3>
             {scholar.openToIndustry && (
               <span title="Open to Industry" className="shrink-0">
-                <Briefcase className="w-3 h-3 text-brand-600" />
+                <Briefcase className="w-3 h-3 text-primary" />
               </span>
             )}
           </div>
@@ -47,7 +47,7 @@ export const ScholarListItem: React.FC<ScholarListItemProps> = ({ scholar, isSel
           </div>
           
           {scholar.activeProjects.length > 0 && (
-             <p className="text-xs text-brand-600 mt-2 font-medium truncate">
+             <p className="text-xs text-primary mt-2 font-medium truncate">
                 <span className="text-slate-400 font-normal">Active: </span>
                 {scholar.activeProjects[0]}
              </p>

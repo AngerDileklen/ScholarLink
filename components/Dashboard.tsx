@@ -1,317 +1,449 @@
 import React, { useState } from 'react';
-import { UserRole } from '../types';
-import { MOCK_SCHOLARS } from '../services/mockData';
-import { 
-  Users, FileText, Eye, Clock, CheckCircle, XCircle, Search, 
-  Building2, Plus, Briefcase, Target, ArrowRight 
+import { UserRole, Inquiry, ApplicationStatus, AcademicEvent, ScholarProfile } from '../types';
+import { MOCK_SCHOLARS, MOCK_INQUIRIES, MOCK_EVENTS } from '../services/mockData';
+import {
+   Users, Eye, FileText, CheckCircle, XCircle, ArrowRight, Calendar, Ticket,
+   LayoutDashboard, User, Settings, MessageSquare, TrendingUp, Mail, Search, ExternalLink,
+   Briefcase, GraduationCap, Clock
 } from 'lucide-react';
-import { Badge } from './Badge';
+import { ApplicationReviewModal } from './ApplicationReviewModal';
 
 interface DashboardProps {
-  initialRole: UserRole;
+   userRole: UserRole;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ initialRole }) => {
-  const [role, setRole] = useState<UserRole>(initialRole);
+export const Dashboard: React.FC<DashboardProps> = ({ userRole }) => {
+   const [activeSection, setActiveSection] = useState<'overview' | 'candidates' | 'research' | 'inquiries'>('overview');
+   const [inquiries, setInquiries] = useState<Inquiry[]>(MOCK_INQUIRIES);
+   const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
+   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+   const [rsvpedEvents, setRsvpedEvents] = useState<string[]>([]);
 
-  // Filter scholars for the Industry view
-  const recommendedScholars = MOCK_SCHOLARS.filter(s => s.openToIndustry).slice(0, 3);
+   // Current professor context (Mock Dr. Tremblay)
+   const currentProfessor = MOCK_SCHOLARS[0];
+   const recommendedEvents = MOCK_EVENTS.slice(0, 3);
 
-  return (
-    <div className="max-w-6xl mx-auto px-4 py-8">
-      {/* Role Toggle */}
-      <div className="mb-8 flex justify-end items-center gap-3">
-         <span className="text-sm text-slate-500">Viewing as:</span>
-         <div className="bg-white border border-slate-200 rounded-lg p-1 flex">
-            <button 
-               onClick={() => setRole('professor')}
-               className={`px-3 py-1.5 text-sm font-medium rounded transition-colors ${role === 'professor' ? 'bg-brand-100 text-brand-700' : 'text-slate-600 hover:bg-slate-50'}`}
-            >
-               Professor
-            </button>
-            <button 
-               onClick={() => setRole('student')}
-               className={`px-3 py-1.5 text-sm font-medium rounded transition-colors ${role === 'student' ? 'bg-emerald-100 text-emerald-700' : 'text-slate-600 hover:bg-slate-50'}`}
-            >
-               Student
-            </button>
-            <button 
-               onClick={() => setRole('corporate')}
-               className={`px-3 py-1.5 text-sm font-medium rounded transition-colors ${role === 'corporate' ? 'bg-slate-800 text-white' : 'text-slate-600 hover:bg-slate-50'}`}
-            >
-               Industry Partner
-            </button>
-         </div>
-      </div>
+   const handleInquiryClick = (inquiry: Inquiry) => {
+      setSelectedInquiry(inquiry);
+      setIsReviewModalOpen(true);
+   };
 
-      <div className="flex justify-between items-end mb-6">
-        <h1 className="text-2xl font-bold text-slate-900">
-          {role === 'professor' && 'Lab Dashboard'}
-          {role === 'student' && 'My Applications'}
-          {role === 'corporate' && 'R&D Partner Portal'}
-        </h1>
-        {role === 'corporate' && (
-           <button className="hidden md:flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-lg font-medium shadow-sm transition-colors">
-              <Plus className="w-4 h-4" />
-              Post New Grant
-           </button>
-        )}
-      </div>
+   const handleStatusUpdate = (id: string, newStatus: ApplicationStatus) => {
+      setInquiries(prev => prev.map(inq =>
+         inq.id === id ? { ...inq, status: newStatus } : inq
+      ));
+      setIsReviewModalOpen(false);
+   };
 
-      {role === 'professor' && (
-        /* Professor Dashboard Specs */
-        <div className="space-y-8 animate-in fade-in duration-300">
-           {/* Top Stats Cards */}
-           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                 <div className="flex justify-between items-start mb-4">
-                    <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
-                       <Users className="w-6 h-6" />
-                    </div>
-                    <span className="text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded">+3 this week</span>
-                 </div>
-                 <div className="text-3xl font-bold text-slate-900">12</div>
-                 <div className="text-sm text-slate-500">Pending Student Inquiries</div>
-              </div>
+   const handleRsvp = (eventId: string) => {
+      setRsvpedEvents(prev => prev.includes(eventId) ? prev.filter(id => id !== eventId) : [...prev, eventId]);
+   };
 
-              <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                 <div className="flex justify-between items-start mb-4">
-                    <div className="p-2 bg-purple-50 rounded-lg text-purple-600">
-                       <Eye className="w-6 h-6" />
-                    </div>
-                 </div>
-                 <div className="text-3xl font-bold text-slate-900">1,402</div>
-                 <div className="text-sm text-slate-500">Profile Views (30 days)</div>
-              </div>
+   // Get status color
+   const getStatusColor = (status: ApplicationStatus) => {
+      switch (status) {
+         case 'pending': return 'bg-amber-50 text-amber-700 border-amber-200';
+         case 'interviewing': return 'bg-blue-50 text-blue-700 border-blue-200';
+         case 'accepted': return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+         case 'rejected': return 'bg-red-50 text-red-700 border-red-200';
+         default: return 'bg-slate-50 text-slate-700 border-slate-200';
+      }
+   };
 
-              <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                 <div className="flex justify-between items-start mb-4">
-                    <div className="p-2 bg-amber-50 rounded-lg text-amber-600">
-                       <FileText className="w-6 h-6" />
-                    </div>
-                 </div>
-                 <div className="text-3xl font-bold text-slate-900">2</div>
-                 <div className="text-sm text-slate-500">Active Openings</div>
-              </div>
-           </div>
+   // Get status icon
+   const getStatusIcon = (status: ApplicationStatus) => {
+      switch (status) {
+         case 'pending': return <Clock className="w-3 h-3" />;
+         case 'interviewing': return <MessageSquare className="w-3 h-3" />;
+         case 'accepted': return <CheckCircle className="w-3 h-3" />;
+         case 'rejected': return <XCircle className="w-3 h-3" />;
+         default: return null;
+      }
+   };
 
-           {/* Pending Requests List */}
-           <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
-                 <h3 className="font-bold text-slate-800">Recent Inquiries</h3>
-                 <button className="text-sm text-brand-600 font-medium hover:underline">View All</button>
-              </div>
-              <div className="divide-y divide-slate-100">
-                 {[1, 2, 3].map((i) => (
-                    <div key={i} className="p-4 hover:bg-slate-50 transition-colors flex items-center justify-between">
-                       <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center font-bold text-slate-500">
-                             {String.fromCharCode(64 + i)}
-                          </div>
-                          <div>
-                             <p className="font-medium text-slate-900">Candidate Name {i}</p>
-                             <p className="text-xs text-slate-500">PhD Inquiry • "Deep Learning Alignment..."</p>
-                          </div>
-                       </div>
-                       <div className="flex gap-2">
-                          <button className="p-2 text-slate-400 hover:text-green-600 hover:bg-green-50 rounded-full"><CheckCircle className="w-5 h-5"/></button>
-                          <button className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-full"><XCircle className="w-5 h-5"/></button>
-                       </div>
-                    </div>
-                 ))}
-              </div>
-           </div>
-        </div>
-      )}
+   return (
+      <div className="flex h-[calc(100vh-64px)] bg-[#f6f6f8] overflow-hidden">
 
-      {role === 'student' && (
-        /* Student Dashboard Specs */
-        <div className="space-y-8 animate-in fade-in duration-300">
-           {/* Application Status Widget */}
-           <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="px-6 py-4 border-b border-slate-100">
-                 <h3 className="font-bold text-slate-800">Application Status</h3>
-              </div>
-              <div className="divide-y divide-slate-100">
-                 <div className="p-6 flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
-                    <div>
-                       <h4 className="font-bold text-slate-900">Dr. Yoshua Tremblay</h4>
-                       <p className="text-sm text-slate-500">Mila - Quebec AI Institute</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                       <span className="px-3 py-1 bg-yellow-100 text-yellow-800 text-sm font-medium rounded-full flex items-center gap-2">
-                          <Clock className="w-4 h-4" /> Under Review
-                       </span>
-                    </div>
-                 </div>
-                 <div className="p-6 flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
-                    <div>
-                       <h4 className="font-bold text-slate-900">Dr. Marie Laurent</h4>
-                       <p className="text-sm text-slate-500">Sorbonne Université</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                        <span className="px-3 py-1 bg-slate-100 text-slate-600 text-sm font-medium rounded-full">
-                           Draft Saved
-                        </span>
-                        <button className="text-sm text-brand-600 font-semibold hover:underline">Continue</button>
-                    </div>
-                 </div>
-              </div>
-           </div>
-
-           {/* Suggested Matches Widget */}
-           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                 <h3 className="font-bold text-slate-800 mb-4">Saved Labs</h3>
-                 <div className="text-center py-8 text-slate-400">
-                    <Search className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                    <p className="text-sm">You haven't saved any profiles yet.</p>
-                 </div>
-              </div>
-              
-              <div className="bg-gradient-to-br from-brand-50 to-white p-6 rounded-xl border border-brand-100 shadow-sm">
-                 <h3 className="font-bold text-brand-900 mb-2">Complete Your Profile</h3>
-                 <p className="text-sm text-brand-700 mb-4">
-                    You are 40% complete. Uploading a CV increases response rates by 3x.
-                 </p>
-                 <div className="w-full bg-brand-200 rounded-full h-2 mb-4">
-                    <div className="bg-brand-500 h-2 rounded-full w-[40%]"></div>
-                 </div>
-                 <button className="text-sm font-bold text-white bg-brand-600 px-4 py-2 rounded-lg hover:bg-brand-700">
-                    Edit Profile
-                 </button>
-              </div>
-           </div>
-        </div>
-      )}
-
-      {role === 'corporate' && (
-        /* Corporate Dashboard Specs */
-        <div className="space-y-8 animate-in fade-in duration-300">
-           
-           {/* Corporate Stats */}
-           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                 <div className="flex justify-between items-start mb-4">
-                    <div className="p-2 bg-indigo-50 rounded-lg text-indigo-600">
-                       <FileText className="w-6 h-6" />
-                    </div>
-                    <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-1 rounded">Annual Cycle</span>
-                 </div>
-                 <div className="text-3xl font-bold text-slate-900">3</div>
-                 <div className="text-sm text-slate-500">Active Grants & Challenges</div>
-              </div>
-
-              <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                 <div className="flex justify-between items-start mb-4">
-                    <div className="p-2 bg-pink-50 rounded-lg text-pink-600">
-                       <Users className="w-6 h-6" />
-                    </div>
-                    <span className="text-xs font-semibold text-green-600 bg-green-50 px-2 py-1 rounded">+12 this week</span>
-                 </div>
-                 <div className="text-3xl font-bold text-slate-900">28</div>
-                 <div className="text-sm text-slate-500">Scholar Applications</div>
-              </div>
-
-              <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
-                 <div className="flex justify-between items-start mb-4">
-                    <div className="p-2 bg-teal-50 rounded-lg text-teal-600">
-                       <Building2 className="w-6 h-6" />
-                    </div>
-                 </div>
-                 <div className="text-3xl font-bold text-slate-900">5</div>
-                 <div className="text-sm text-slate-500">Shortlisted Labs</div>
-              </div>
-           </div>
-
-           {/* Mobile Action Button (Visible only on mobile) */}
-           <button className="md:hidden w-full flex items-center justify-center gap-2 bg-brand-600 hover:bg-brand-700 text-white px-4 py-3 rounded-lg font-medium shadow-sm transition-colors">
-              <Plus className="w-4 h-4" />
-              Post New Grant
-           </button>
-
-           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Main Widget: Recommended Scholars */}
-              <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                  <div className="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
-                     <div>
-                        <h3 className="font-bold text-slate-800">Recommended Scholars</h3>
-                        <p className="text-xs text-slate-500 mt-1">Based on your R&D focus areas</p>
-                     </div>
-                     <button className="text-sm text-brand-600 font-medium hover:underline">View All Matches</button>
+         {/* Sidebar */}
+         <aside className="w-64 bg-white border-r border-slate-200 hidden md:flex flex-col shrink-0">
+            <div className="p-6">
+               <h2 className="text-lg font-bold text-slate-900 tracking-tight">ScholarLink</h2>
+            </div>
+            <nav className="flex-1 px-4 space-y-1">
+               <button
+                  onClick={() => setActiveSection('overview')}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeSection === 'overview'
+                        ? 'bg-primary/10 text-primary font-medium'
+                        : 'text-slate-500 hover:bg-slate-50'
+                     }`}
+               >
+                  <LayoutDashboard className="w-5 h-5" /> Dashboard
+               </button>
+               <button
+                  onClick={() => setActiveSection('candidates')}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeSection === 'candidates'
+                        ? 'bg-primary/10 text-primary font-medium'
+                        : 'text-slate-500 hover:bg-slate-50'
+                     }`}
+               >
+                  <Users className="w-5 h-5" /> Candidates
+                  <span className="ml-auto bg-primary/10 text-primary text-xs font-bold px-2 py-0.5 rounded-full">
+                     {inquiries.length}
+                  </span>
+               </button>
+               <button
+                  onClick={() => setActiveSection('research')}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeSection === 'research'
+                        ? 'bg-primary/10 text-primary font-medium'
+                        : 'text-slate-500 hover:bg-slate-50'
+                     }`}
+               >
+                  <FileText className="w-5 h-5" /> Research
+               </button>
+               <button
+                  onClick={() => setActiveSection('inquiries')}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeSection === 'inquiries'
+                        ? 'bg-primary/10 text-primary font-medium'
+                        : 'text-slate-500 hover:bg-slate-50'
+                     }`}
+               >
+                  <MessageSquare className="w-5 h-5" /> Inquiries
+                  <span className="ml-auto bg-amber-100 text-amber-700 text-xs font-bold px-2 py-0.5 rounded-full">
+                     {inquiries.filter(i => i.status === 'pending').length}
+                  </span>
+               </button>
+            </nav>
+            <div className="p-4 border-t border-slate-200">
+               <div className="flex items-center gap-3 px-2 py-2">
+                  <img src={currentProfessor.avatarUrl} className="w-10 h-10 rounded-full object-cover border-2 border-slate-100" alt="Prof" />
+                  <div className="flex-1 min-w-0">
+                     <p className="text-sm font-semibold truncate text-slate-900">{currentProfessor.name}</p>
+                     <p className="text-xs text-slate-500 truncate">Settings</p>
                   </div>
-                  <div className="divide-y divide-slate-100">
-                     {recommendedScholars.map((scholar) => (
-                        <div key={scholar.id} className="p-6 hover:bg-slate-50 transition-colors">
-                           <div className="flex justify-between items-start">
-                              <div className="flex gap-4">
-                                 <img src={scholar.avatarUrl} alt={scholar.name} className="w-12 h-12 rounded-full object-cover border-2 border-slate-100" />
-                                 <div>
-                                    <h4 className="font-bold text-slate-900">{scholar.name}</h4>
-                                    <p className="text-sm text-slate-600">{scholar.title}, {scholar.university.name}</p>
-                                    
-                                    {/* Active Projects Preview */}
-                                    {scholar.activeProjects && scholar.activeProjects.length > 0 && (
-                                       <div className="mt-2 flex items-center gap-2 text-xs text-slate-500">
-                                          <Briefcase className="w-3 h-3 text-slate-400" />
-                                          <span className="italic">"{scholar.activeProjects[0]}"</span>
-                                       </div>
-                                    )}
+                  <Settings className="w-5 h-5 text-slate-400" />
+               </div>
+            </div>
+         </aside>
 
-                                    <div className="mt-2">
-                                       <Badge label="Open to Collaboration" variant="success" icon={<Target className="w-3 h-3" />} />
-                                    </div>
-                                 </div>
+         {/* Main Content */}
+         <main className="flex-1 flex flex-col min-w-0 overflow-y-auto p-6 md:p-8">
+            <div className="max-w-7xl mx-auto w-full space-y-8">
+
+               {/* Overview Section */}
+               {activeSection === 'overview' && (
+                  <>
+                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                           <h1 className="text-2xl font-bold text-slate-900">Dashboard Overview</h1>
+                           <p className="text-slate-500 mt-1">Welcome back, {currentProfessor.name.split(' ')[1]}. Here's your lab activity.</p>
+                        </div>
+                     </div>
+
+                     {/* Stats Cards */}
+                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                           <div className="flex items-center justify-between">
+                              <div>
+                                 <p className="text-sm font-medium text-slate-500">Pending Applications</p>
+                                 <p className="text-3xl font-bold text-slate-900 mt-2">{inquiries.filter(i => i.status === 'pending').length}</p>
                               </div>
-                              <button className="px-4 py-2 text-sm font-medium text-brand-600 bg-brand-50 hover:bg-brand-100 rounded-lg transition-colors">
-                                 Connect
-                              </button>
+                              <div className="w-12 h-12 bg-amber-100 rounded-lg flex items-center justify-center">
+                                 <Mail className="w-6 h-6 text-amber-600" />
+                              </div>
                            </div>
                         </div>
-                     ))}
-                     {recommendedScholars.length === 0 && (
-                        <div className="p-8 text-center text-slate-500">
-                           No scholars found matching current criteria.
-                        </div>
-                     )}
-                  </div>
-              </div>
 
-              {/* Sidebar: Active Grants */}
-              <div className="bg-slate-50 rounded-xl border border-slate-200 p-6">
-                  <h3 className="font-bold text-slate-800 mb-4">Your Active Grants</h3>
-                  <div className="space-y-4">
-                     <div className="bg-white p-4 rounded-lg border border-slate-100 shadow-sm">
-                        <div className="flex justify-between items-start mb-2">
-                           <span className="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded">AI Safety</span>
-                           <span className="text-xs text-slate-400">Ends in 12d</span>
+                        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                           <div className="flex items-center justify-between">
+                              <div>
+                                 <p className="text-sm font-medium text-slate-500">Profile Views</p>
+                                 <p className="text-3xl font-bold text-slate-900 mt-2">1,240</p>
+                              </div>
+                              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                 <Eye className="w-6 h-6 text-blue-600" />
+                              </div>
+                           </div>
                         </div>
-                        <h4 className="font-bold text-sm text-slate-900">LLM Alignment Research Fund</h4>
-                        <div className="mt-3 flex items-center justify-between">
-                           <div className="flex -space-x-2">
-                              {[1,2,3].map(i => (
-                                 <div key={i} className="w-6 h-6 rounded-full bg-slate-200 border-2 border-white"></div>
+
+                        <div className="bg-white p-6 rounded-xl border border-slate-200 shadow-sm">
+                           <div className="flex items-center justify-between">
+                              <div>
+                                 <p className="text-sm font-medium text-slate-500">Active Projects</p>
+                                 <p className="text-3xl font-bold text-slate-900 mt-2">{currentProfessor.activeProjects.length}</p>
+                              </div>
+                              <div className="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
+                                 <Briefcase className="w-6 h-6 text-emerald-600" />
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+
+                     {/* Recent Applications */}
+                     <div>
+                        <div className="flex items-center justify-between mb-4">
+                           <h2 className="text-lg font-bold text-slate-900">Recent Applications</h2>
+                           <button
+                              onClick={() => setActiveSection('candidates')}
+                              className="text-sm text-primary font-medium hover:underline"
+                           >
+                              View All
+                           </button>
+                        </div>
+                        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                           <div className="overflow-x-auto">
+                              <table className="w-full text-left">
+                                 <thead className="bg-slate-50 border-b border-slate-200">
+                                    <tr>
+                                       <th className="px-6 py-3 text-xs font-medium text-slate-500 uppercase">Candidate</th>
+                                       <th className="px-6 py-3 text-xs font-medium text-slate-500 uppercase">Type</th>
+                                       <th className="px-6 py-3 text-xs font-medium text-slate-500 uppercase">Match</th>
+                                       <th className="px-6 py-3 text-xs font-medium text-slate-500 uppercase">Status</th>
+                                       <th className="px-6 py-3 text-xs font-medium text-slate-500 uppercase">Action</th>
+                                    </tr>
+                                 </thead>
+                                 <tbody className="divide-y divide-slate-200">
+                                    {inquiries.slice(0, 4).map((inquiry) => (
+                                       <tr key={inquiry.id} className="hover:bg-slate-50">
+                                          <td className="px-6 py-4">
+                                             <div className="flex items-center gap-3">
+                                                <img src={inquiry.candidateAvatar} className="w-10 h-10 rounded-full object-cover" alt="" />
+                                                <span className="font-medium text-slate-900">{inquiry.candidateName}</span>
+                                             </div>
+                                          </td>
+                                          <td className="px-6 py-4 capitalize text-slate-600">{inquiry.type}</td>
+                                          <td className="px-6 py-4">
+                                             <span className={`font-medium ${inquiry.matchScore >= 80 ? 'text-emerald-600' : 'text-amber-600'}`}>
+                                                {inquiry.matchScore}%
+                                             </span>
+                                          </td>
+                                          <td className="px-6 py-4">
+                                             <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium capitalize border ${getStatusColor(inquiry.status)}`}>
+                                                {getStatusIcon(inquiry.status)}
+                                                {inquiry.status}
+                                             </span>
+                                          </td>
+                                          <td className="px-6 py-4">
+                                             <button
+                                                onClick={() => handleInquiryClick(inquiry)}
+                                                className="text-primary text-sm font-medium hover:underline"
+                                             >
+                                                Review
+                                             </button>
+                                          </td>
+                                       </tr>
+                                    ))}
+                                 </tbody>
+                              </table>
+                           </div>
+                        </div>
+                     </div>
+                  </>
+               )}
+
+               {/* Candidates Section - Issue #8 Fix */}
+               {activeSection === 'candidates' && (
+                  <div className="space-y-6">
+                     <div className="flex items-center justify-between">
+                        <h1 className="text-2xl font-bold text-slate-900">Candidates</h1>
+                        <div className="relative">
+                           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                           <input
+                              placeholder="Search candidates..."
+                              className="pl-9 pr-4 py-2 border border-slate-200 rounded-lg text-sm w-64"
+                           />
+                        </div>
+                     </div>
+
+                     <div className="bg-white rounded-xl border border-slate-200 shadow-sm">
+                        <div className="overflow-x-auto">
+                           <table className="w-full text-left">
+                              <thead className="bg-slate-50 border-b border-slate-200">
+                                 <tr>
+                                    <th className="px-6 py-3 text-xs font-medium text-slate-500 uppercase">Candidate</th>
+                                    <th className="px-6 py-3 text-xs font-medium text-slate-500 uppercase">Type</th>
+                                    <th className="px-6 py-3 text-xs font-medium text-slate-500 uppercase">Match</th>
+                                    <th className="px-6 py-3 text-xs font-medium text-slate-500 uppercase">Status</th>
+                                    <th className="px-6 py-3 text-xs font-medium text-slate-500 uppercase">Applied</th>
+                                    <th className="px-6 py-3 text-xs font-medium text-slate-500 uppercase">Actions</th>
+                                 </tr>
+                              </thead>
+                              <tbody className="divide-y divide-slate-200">
+                                 {inquiries.map((inquiry) => (
+                                    <tr key={inquiry.id} className="hover:bg-slate-50">
+                                       <td className="px-6 py-4">
+                                          <div className="flex items-center gap-3">
+                                             <img src={inquiry.candidateAvatar} className="w-10 h-10 rounded-full object-cover" alt="" />
+                                             <div>
+                                                <p className="font-medium text-slate-900">{inquiry.candidateName}</p>
+                                                <p className="text-xs text-slate-500">{inquiry.cvLink}</p>
+                                             </div>
+                                          </div>
+                                       </td>
+                                       <td className="px-6 py-4 capitalize">
+                                          <span className="px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs font-medium">{inquiry.type}</span>
+                                       </td>
+                                       <td className="px-6 py-4">
+                                          <div className="w-20">
+                                             <div className="flex justify-between text-xs mb-1">
+                                                <span className={`font-bold ${inquiry.matchScore >= 80 ? 'text-emerald-600' : 'text-amber-600'}`}>{inquiry.matchScore}%</span>
+                                             </div>
+                                             <div className="w-full bg-slate-100 rounded-full h-1.5">
+                                                <div className={`h-1.5 rounded-full ${inquiry.matchScore >= 80 ? 'bg-emerald-500' : 'bg-amber-500'}`} style={{ width: `${inquiry.matchScore}%` }}></div>
+                                             </div>
+                                          </div>
+                                       </td>
+                                       <td className="px-6 py-4">
+                                          <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium capitalize border ${getStatusColor(inquiry.status)}`}>
+                                             {getStatusIcon(inquiry.status)}
+                                             {inquiry.status}
+                                          </span>
+                                       </td>
+                                       <td className="px-6 py-4 text-sm text-slate-500">{inquiry.timestamp}</td>
+                                       <td className="px-6 py-4">
+                                          <div className="flex gap-2">
+                                             <button
+                                                onClick={() => handleInquiryClick(inquiry)}
+                                                className="px-3 py-1 text-xs font-medium bg-primary text-white rounded hover:bg-primary-hover"
+                                             >
+                                                Review
+                                             </button>
+                                             <button className="px-3 py-1 text-xs font-medium border border-slate-200 rounded hover:bg-slate-50">
+                                                Message
+                                             </button>
+                                          </div>
+                                       </td>
+                                    </tr>
+                                 ))}
+                              </tbody>
+                           </table>
+                        </div>
+                     </div>
+                  </div>
+               )}
+
+               {/* Research Section - Issue #8 Fix */}
+               {activeSection === 'research' && (
+                  <div className="space-y-6">
+                     <div className="flex items-center justify-between">
+                        <h1 className="text-2xl font-bold text-slate-900">Research</h1>
+                     </div>
+
+                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Active Projects */}
+                        <div className="bg-white rounded-xl border border-slate-200 p-6">
+                           <h2 className="text-lg font-bold text-slate-900 mb-4">Active Projects</h2>
+                           <div className="space-y-4">
+                              {currentProfessor.activeProjects.map((project, i) => (
+                                 <div key={i} className="p-4 bg-slate-50 rounded-lg">
+                                    <div className="flex items-center justify-between mb-2">
+                                       <h3 className="font-medium text-slate-900">{project}</h3>
+                                       <span className="px-2 py-0.5 bg-emerald-100 text-emerald-700 text-xs rounded-full">Active</span>
+                                    </div>
+                                    <p className="text-sm text-slate-500">Research in progress with full funding support</p>
+                                 </div>
                               ))}
                            </div>
-                           <span className="text-xs font-medium text-slate-600">14 Applicants</span>
+                        </div>
+
+                        {/* Publications */}
+                        <div className="bg-white rounded-xl border border-slate-200 p-6">
+                           <h2 className="text-lg font-bold text-slate-900 mb-4">Recent Publications</h2>
+                           <div className="space-y-4">
+                              {currentProfessor.papers?.map((paper, i) => (
+                                 <div key={i} className="flex gap-4 p-4 bg-slate-50 rounded-lg">
+                                    <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center shrink-0">
+                                       <FileText className="w-5 h-5 text-primary" />
+                                    </div>
+                                    <div>
+                                       <h3 className="font-medium text-slate-900 text-sm">{paper.title}</h3>
+                                       <p className="text-xs text-slate-500">{paper.journal} • {paper.year}</p>
+                                       <p className="text-xs text-slate-400 mt-1">{paper.citations} citations</p>
+                                    </div>
+                                 </div>
+                              ))}
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               )}
+
+               {/* Inquiries Section - Issue #8 Fix */}
+               {activeSection === 'inquiries' && (
+                  <div className="space-y-6">
+                     <div className="flex items-center justify-between">
+                        <h1 className="text-2xl font-bold text-slate-900">Inquiries</h1>
+                        <div className="flex gap-2">
+                           <select className="px-3 py-2 border border-slate-200 rounded-lg text-sm">
+                              <option>All Status</option>
+                              <option>Pending</option>
+                              <option>Interviewing</option>
+                              <option>Accepted</option>
+                              <option>Rejected</option>
+                           </select>
                         </div>
                      </div>
 
-                     <div className="bg-white p-4 rounded-lg border border-slate-100 shadow-sm opacity-70">
-                        <div className="flex justify-between items-start mb-2">
-                           <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">Climate Tech</span>
-                           <span className="text-xs text-slate-400">Closed</span>
-                        </div>
-                        <h4 className="font-bold text-sm text-slate-900">Carbon Capture Catalyst</h4>
-                        <button className="mt-3 text-xs font-semibold text-brand-600 flex items-center gap-1 hover:underline">
-                           Review Proposals <ArrowRight className="w-3 h-3" />
-                        </button>
+                     <div className="space-y-4">
+                        {inquiries.map((inquiry) => (
+                           <div key={inquiry.id} className="bg-white rounded-xl border border-slate-200 p-6">
+                              <div className="flex items-start justify-between gap-4">
+                                 <div className="flex gap-4">
+                                    <img src={inquiry.candidateAvatar} className="w-14 h-14 rounded-full object-cover" alt="" />
+                                    <div>
+                                       <div className="flex items-center gap-2">
+                                          <h3 className="font-bold text-slate-900">{inquiry.candidateName}</h3>
+                                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium capitalize border ${getStatusColor(inquiry.status)}`}>
+                                             {getStatusIcon(inquiry.status)}
+                                             {inquiry.status}
+                                          </span>
+                                       </div>
+                                       <p className="text-sm text-slate-500 capitalize">{inquiry.type} Candidate</p>
+                                       <p className="text-xs text-slate-400 mt-1">Applied {inquiry.timestamp}</p>
+                                    </div>
+                                 </div>
+                                 <div className="text-right">
+                                    <p className="text-sm text-slate-500">Match Score</p>
+                                    <p className={`text-2xl font-bold ${inquiry.matchScore >= 80 ? 'text-emerald-600' : 'text-amber-600'}`}>
+                                       {inquiry.matchScore}%
+                                    </p>
+                                 </div>
+                              </div>
+                              <div className="mt-4 p-4 bg-slate-50 rounded-lg">
+                                 <p className="text-sm text-slate-600 line-clamp-3">{inquiry.message}</p>
+                              </div>
+                              <div className="mt-4 flex gap-3">
+                                 <button
+                                    onClick={() => handleInquiryClick(inquiry)}
+                                    className="px-4 py-2 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary-hover"
+                                 >
+                                    Review Application
+                                 </button>
+                                 <button className="px-4 py-2 border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50">
+                                    Message
+                                 </button>
+                                 <a
+                                    href={inquiry.cvLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="px-4 py-2 border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 flex items-center gap-2"
+                                 >
+                                    View CV <ExternalLink className="w-3 h-3" />
+                                 </a>
+                              </div>
+                           </div>
+                        ))}
                      </div>
                   </div>
-              </div>
-           </div>
-        </div>
-      )}
-    </div>
-  );
+               )}
+            </div>
+         </main>
+
+         <ApplicationReviewModal
+            isOpen={isReviewModalOpen}
+            onClose={() => setIsReviewModalOpen(false)}
+            inquiry={selectedInquiry}
+            onUpdateStatus={handleStatusUpdate}
+         />
+      </div>
+   );
 };

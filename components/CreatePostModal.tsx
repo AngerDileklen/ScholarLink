@@ -90,14 +90,14 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClos
 
           <div className="mt-6 flex justify-between items-center">
              <div className="flex gap-2">
-                <button className="p-2 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-full transition-colors" title="Add Image">
+                <button className="p-2 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-full transition-colors" title="Add Image">
                    <Image className="w-5 h-5" />
                 </button>
-                <button className="p-2 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-full transition-colors" title="Attach Link">
+                <button className="p-2 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-full transition-colors" title="Attach Link">
                    <Link className="w-5 h-5" />
                 </button>
                 {postType === 'grant_post' && (
-                   <button className="p-2 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded-full transition-colors" title="Attach Document">
+                   <button className="p-2 text-slate-400 hover:text-primary hover:bg-primary/10 rounded-full transition-colors" title="Attach Document">
                       <FileText className="w-5 h-5" />
                    </button>
                 )}
@@ -106,7 +106,7 @@ export const CreatePostModal: React.FC<CreatePostModalProps> = ({ isOpen, onClos
              <button 
                onClick={handleSubmit}
                disabled={!content.trim()}
-               className="bg-brand-600 hover:bg-brand-700 disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-2 rounded-lg font-semibold shadow-sm flex items-center gap-2 transition-all"
+               className="bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed text-white px-6 py-2 rounded-lg font-semibold shadow-sm flex items-center gap-2 transition-all"
              >
                <Send className="w-4 h-4" />
                Post

@@ -71,7 +71,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({ scholar, isOpen, onC
               <select 
                 value={inquiryType} 
                 onChange={(e) => setInquiryType(e.target.value)}
-                className="w-full rounded-lg border-slate-300 border px-3 py-2 text-slate-700 focus:ring-2 focus:ring-brand-500 outline-none"
+                className="w-full rounded-lg border-slate-300 border px-3 py-2 text-slate-700 focus:ring-2 focus:ring-primary outline-none"
               >
                 <option value="phd">PhD Application / Supervision</option>
                 <option value="master">Masters Project</option>
@@ -90,7 +90,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({ scholar, isOpen, onC
                 value={researchMatch}
                 onChange={(e) => setResearchMatch(e.target.value)}
                 onBlur={() => setIsTouched(true)}
-                className={`w-full rounded-lg border px-3 py-2 text-slate-700 focus:ring-2 focus:ring-brand-500 outline-none min-h-[100px] ${
+                className={`w-full rounded-lg border px-3 py-2 text-slate-700 focus:ring-2 focus:ring-primary outline-none min-h-[100px] ${
                   isTouched && researchMatch.length < 50 ? 'border-red-300 bg-red-50' : 'border-slate-300'
                 }`}
                 placeholder="I noticed your recent work on [Topic]..."
@@ -109,7 +109,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({ scholar, isOpen, onC
               <select 
                 value={fundingStatus} 
                 onChange={(e) => setFundingStatus(e.target.value)}
-                className="w-full rounded-lg border-slate-300 border px-3 py-2 text-slate-700 focus:ring-2 focus:ring-brand-500 outline-none"
+                className="w-full rounded-lg border-slate-300 border px-3 py-2 text-slate-700 focus:ring-2 focus:ring-primary outline-none"
               >
                 <option value="seeking">I am seeking funding</option>
                 <option value="self">I have my own funding / scholarship</option>
@@ -126,7 +126,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({ scholar, isOpen, onC
                 type="text"
                 value={cvLink}
                 onChange={(e) => setCvLink(e.target.value)}
-                className="w-full rounded-lg border-slate-300 border px-3 py-2 text-slate-700 focus:ring-2 focus:ring-brand-500 outline-none"
+                className="w-full rounded-lg border-slate-300 border px-3 py-2 text-slate-700 focus:ring-2 focus:ring-primary outline-none"
                 placeholder="https://linkedin.com/in/..."
               />
             </div>
@@ -135,7 +135,7 @@ export const ConnectModal: React.FC<ConnectModalProps> = ({ scholar, isOpen, onC
               <button 
                 type="submit"
                 className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg font-semibold text-white transition-all ${
-                  isValid ? 'bg-brand-600 hover:bg-brand-700 shadow-md' : 'bg-slate-300 cursor-not-allowed'
+                  isValid ? 'bg-primary hover:bg-primary-hover shadow-md' : 'bg-slate-300 cursor-not-allowed'
                 }`}
                 disabled={!isValid}
               >

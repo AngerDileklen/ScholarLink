@@ -23,14 +23,14 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, onU
         </button>
 
         {/* Premium Header */}
-        <div className="bg-gradient-to-br from-slate-900 to-brand-900 p-8 text-center text-white relative overflow-hidden">
+        <div className="bg-gradient-to-br from-slate-900 to-primary p-8 text-center text-white relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
           <div className="relative z-10 flex flex-col items-center">
             <div className="bg-white/10 p-4 rounded-full mb-4 backdrop-blur-sm border border-white/20">
-              <ShieldCheck className="w-10 h-10 text-brand-300" />
+              <ShieldCheck className="w-10 h-10 text-white" />
             </div>
             <h2 className="text-2xl font-bold tracking-tight">Upgrade to Partner</h2>
-            <p className="text-brand-100 text-sm mt-2 font-medium">Unlock full recruitment & posting capabilities</p>
+            <p className="text-blue-100 text-sm mt-2 font-medium">Unlock full recruitment & posting capabilities</p>
           </div>
         </div>
 
@@ -62,7 +62,7 @@ export const PaywallModal: React.FC<PaywallModalProps> = ({ isOpen, onClose, onU
 
           <button 
             onClick={onUpgrade}
-            className="w-full bg-brand-600 hover:bg-brand-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-brand-200 transition-all flex items-center justify-center gap-2 group"
+            className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-200 transition-all flex items-center justify-center gap-2 group"
           >
             <CreditCard className="w-5 h-5 group-hover:scale-105 transition-transform" />
             Subscribe & Post Opportunity

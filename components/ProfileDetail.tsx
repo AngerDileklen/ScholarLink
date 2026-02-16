@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScholarProfile } from '../types';
 import { Badge } from './Badge';
-import { MapPin, Building, BookOpen, Mail, Link as LinkIcon, Lock, X, Briefcase, Zap, ArrowUpRight } from 'lucide-react';
+import { MapPin, Building, BookOpen, Mail, Link as LinkIcon, Lock, X, Briefcase, Zap, ArrowUpRight, Ticket, Calendar } from 'lucide-react';
 
 interface ProfileDetailProps {
   scholar: ScholarProfile;
@@ -98,6 +98,38 @@ export const ProfileDetail: React.FC<ProfileDetailProps> = ({ scholar, isOpen, o
         {/* Content */}
         <div className="p-8 space-y-8">
           
+          {/* Attending Conferences (New) */}
+          {scholar.attendingEvents && scholar.attendingEvents.length > 0 && (
+            <section>
+              <h3 className="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+                 <Ticket className="w-5 h-5 text-indigo-500" /> Attending Upcoming Conferences
+              </h3>
+              <div className="space-y-3">
+                 {scholar.attendingEvents.map((event) => (
+                    <div key={event.id} className="flex bg-indigo-50/50 border border-indigo-200 border-dashed rounded-lg overflow-hidden group hover:bg-indigo-50 transition-colors">
+                       {/* Left Stub */}
+                       <div className="w-24 bg-white border-r border-dashed border-indigo-200 flex flex-col items-center justify-center p-3 text-center">
+                          <span className="text-xs font-bold text-slate-400 uppercase">{event.date.split(' ')[0]}</span>
+                          <span className="text-xl font-bold text-slate-900">{event.date.split(' ')[1].replace(',', '')}</span>
+                       </div>
+                       {/* Right Content */}
+                       <div className="flex-1 p-3 flex justify-between items-center">
+                          <div>
+                             <h4 className="font-bold text-slate-800 text-sm">{event.name}</h4>
+                             <div className="flex items-center gap-1 text-xs text-slate-500 mt-1">
+                                <MapPin className="w-3 h-3" /> {event.location}
+                             </div>
+                          </div>
+                          <div className="bg-indigo-100 text-indigo-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wide">
+                             Attending
+                          </div>
+                       </div>
+                    </div>
+                 ))}
+              </div>
+            </section>
+          )}
+
           <section>
              <h3 className="text-lg font-bold text-slate-900 mb-3">About</h3>
              <p className="text-slate-600 leading-relaxed">{scholar.bio}</p>
