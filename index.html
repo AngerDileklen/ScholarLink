@@ -8,28 +8,70 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
+        darkMode: 'class',
         theme: {
           extend: {
             fontFamily: {
               sans: ['Inter', 'sans-serif'],
             },
             colors: {
+              // New Primary Blue from Mockups
+              primary: {
+                DEFAULT: '#2b6cee',
+                hover: '#1a5bc4',
+                50: '#eef6ff',
+                100: '#d9e9ff',
+                500: '#2b6cee',
+                600: '#1a5bc4',
+                700: '#1548a3',
+                900: '#101622',
+              },
+              // Alias brand to primary for backward compatibility and fixing missing color issues
               brand: {
-                50: '#f0f9ff',
-                100: '#e0f2fe',
-                500: '#0ea5e9',
-                600: '#0284c7',
-                700: '#0369a1',
-                900: '#0c4a6e',
+                DEFAULT: '#2b6cee',
+                50: '#eef6ff',
+                100: '#d9e9ff',
+                200: '#bfdbfe',
+                300: '#93c5fd',
+                400: '#60a5fa',
+                500: '#2b6cee',
+                600: '#1a5bc4',
+                700: '#1548a3',
+                800: '#1e40af',
+                900: '#101622',
+              },
+              // Background tones
+              slate: {
+                50: '#f6f6f8', // background-light
+                100: '#e5e7eb',
+                200: '#d1d5db',
+                300: '#9ca3af',
+                400: '#6b7280',
+                500: '#374151',
+                600: '#1f2937',
+                700: '#111827',
+                800: '#1e293b', // card-darkish
+                900: '#101622', // background-dark
               }
             }
           }
         }
       }
     </script>
-  </head>
-  <body class="bg-slate-50 text-slate-900 antialiased">
+  <script type="importmap">
+{
+  "imports": {
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.561.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-[#f6f6f8] text-slate-800 antialiased min-h-screen">
     <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
-  </body>
+  <script type="module" src="/index.tsx"></script>
+</body>
 </html>

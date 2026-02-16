@@ -27,6 +27,17 @@ export interface Paper {
   url?: string;
 }
 
+// Phase 10: Events
+export interface AcademicEvent {
+  id: string;
+  name: string;
+  date: string;
+  location: string;
+  topics: string[];
+  websiteUrl: string;
+  description?: string;
+}
+
 export interface ScholarProfile {
   id: string;
   name: string;
@@ -51,9 +62,11 @@ export interface ScholarProfile {
   recentPublications?: string[]; // Legacy simple list
   papers?: Paper[]; // Detailed list for ResearchGate view
   education?: Education[];
+  attendingEvents?: AcademicEvent[]; // New field for Phase 10
   // Phase 1 Expansion
   openToIndustry: boolean;
   activeProjects: string[];
+  role?: UserRole; // For tracking user role
 }
 
 export interface CorporateProfile {
@@ -115,4 +128,23 @@ export interface Post {
     title: string;
     url: string;
   };
+}
+
+// Phase 9: Application Review
+export type ApplicationStatus = 'pending' | 'interviewing' | 'rejected' | 'accepted';
+
+export interface Inquiry {
+  id: string;
+  candidateId: string;
+  candidateName: string;
+  candidateAvatar: string;
+  professorId: string; // alias for targetProfessorId
+  targetProfessorId: string;
+  positionTitle: string;
+  type: 'phd' | 'master' | 'postdoc';
+  message: string; // Cover letter
+  cvLink: string;
+  status: ApplicationStatus;
+  timestamp: string;
+  matchScore: number; // 0-100
 }
