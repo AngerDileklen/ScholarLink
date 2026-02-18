@@ -12,6 +12,19 @@ interface AuthModalProps {
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTab = 'login' }) => {
   const { login, signup } = useAuth();
   const [mode, setMode] = useState<'login' | 'signup'>(defaultTab);
+  
+  // Reset mode when modal opens with new defaultTab
+  useEffect(() => {
+    if (isOpen) {
+      setMode(defaultTab);
+      // Clear form when switching
+      setEmail('');
+      setPassword('');
+      setName('');
+      setError('');
+    }
+  }, [isOpen, defaultTab]);
+  
   const [selectedRole, setSelectedRole] = useState<UserRole>('professor');
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState('');
