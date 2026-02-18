@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { X, GraduationCap, Building2, User } from 'lucide-react';
 import { UserRole } from '../types';
 import { useAuth } from '../context/AuthContext';
