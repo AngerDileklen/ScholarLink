@@ -1,0 +1,7 @@
+{
+  "name": "ScholarLink MVP",
+  "description": "A discovery engine for academic talent, connecting scholars by research topic and geographical location.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}

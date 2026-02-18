@@ -1,0 +1,150 @@
+import React from 'react';
+
+export interface Coordinates {
+  lat: number;
+  lng: number;
+}
+
+export interface University {
+  name: string;
+  logoUrl?: string; // Placeholder for university logo
+}
+
+export interface Education {
+  id: string;
+  degree: string;
+  institution: string;
+  yearStart: string;
+  yearEnd: string;
+}
+
+export interface Paper {
+  id: string;
+  title: string;
+  journal: string;
+  year: number;
+  citations: number;
+  url?: string;
+}
+
+// Phase 10: Events
+export interface AcademicEvent {
+  id: string;
+  name: string;
+  date: string;
+  location: string;
+  topics: string[];
+  websiteUrl: string;
+  description?: string;
+}
+
+export interface ScholarProfile {
+  id: string;
+  name: string;
+  title: string;
+  university: University;
+  department: string;
+  location: {
+    city: string;
+    country: string;
+    coordinates: Coordinates;
+  };
+  researchInterests: string[]; // These will serve as AI Keywords
+  bio: string; // "Ethos" / Summary
+  acceptingStudents: boolean;
+  fundingAvailable: boolean;
+  avatarUrl: string;
+  citationCount: number;
+  hIndex: number;
+  verified: boolean;
+  // Extended fields for Profile View
+  email?: string;
+  recentPublications?: string[]; // Legacy simple list
+  papers?: Paper[]; // Detailed list for ResearchGate view
+  education?: Education[];
+  attendingEvents?: AcademicEvent[]; // New field for Phase 10
+  // Phase 1 Expansion
+  openToIndustry: boolean;
+  activeProjects: string[];
+  role?: UserRole; // For tracking user role
+}
+
+export interface CorporateProfile {
+  id: string;
+  name: string;
+  industry: string;
+  description: string;
+  location: {
+    city: string;
+    country: string;
+  };
+  websiteUrl: string;
+  avatarUrl: string;
+}
+
+export interface GrantOpportunity {
+  id: string;
+  title: string;
+  organizationName: string;
+  description: string;
+  amount: string;
+  deadline: string;
+  tags: string[];
+  applyLink: string;
+}
+
+export interface SearchFilters {
+  topic: string;
+  locationName: string;
+  coordinates: Coordinates | null;
+  radiusKm: number;
+  onlyAcceptingStudents: boolean;
+}
+
+export type UserRole = 'professor' | 'student' | 'corporate';
+
+export interface DashboardStat {
+  label: string;
+  value: string | number;
+  trend?: string;
+  icon?: React.ElementType;
+}
+
+// Phase 4: Social Feed Types
+export type PostType = 'paper_share' | 'project_update' | 'grant_post';
+
+export interface Post {
+  id: string;
+  author: ScholarProfile | CorporateProfile;
+  type: PostType;
+  content: string;
+  timestamp: string;
+  metrics: {
+    likes: number;
+    comments: number;
+    shares?: number;
+  };
+  relatedLink?: {
+    title: string;
+    url: string;
+  };
+}
+
+// Phase 9: Application Review
+export type ApplicationStatus = 'pending' | 'interviewing' | 'rejected' | 'accepted';
+
+export interface Inquiry {
+  id: string;
+  candidateId: string;
+  candidateName: string;
+  candidateAvatar: string;
+  professorId: string; // alias for targetProfessorId
+  targetProfessorId: string;
+  positionTitle: string;
+  type: 'phd' | 'master' | 'postdoc';
+  message: string; // Cover letter
+  cvLink: string;
+  status: ApplicationStatus;
+  timestamp: string;
+  matchScore: number; // 0-100
+}
