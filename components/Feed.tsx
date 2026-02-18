@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MOCK_POSTS, MOCK_SCHOLARS } from '../services/mockData';
 import { Post, ScholarProfile, CorporateProfile } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { CreatePostModal } from './CreatePostModal';
+import { fetchPosts } from '../services/api';
+import { getDefaultAvatar } from './OnboardingModal';
 import { 
   Heart, MessageCircle, Share2, Send, Image as ImageIcon, Link as LinkIcon, 
-  MoreHorizontal, CheckCircle2, TrendingUp, UserPlus, Bookmark, FileText, Users, DollarSign, Calendar
+  MoreHorizontal, CheckCircle2, TrendingUp, UserPlus, Bookmark, FileText, Users, DollarSign, Calendar,
+  RefreshCw, AlertCircle, X
 } from 'lucide-react';
 
 interface FeedProps {
@@ -14,12 +17,41 @@ interface FeedProps {
 }
 
 export const Feed: React.FC<FeedProps> = ({ onSignupRequest, onViewProfile }) => {
-  const { user, isAuthenticated } = useAuth();
+  const { user, isAuthenticated, role } = useAuth();
   const [posts, setPosts] = useState<Post[]>(MOCK_POSTS);
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set());
   const [showCommentBox, setShowCommentBox] = useState<string | null>(null);
   const [commentText, setCommentText] = useState<Record<string, string>>({});
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [showBanner, setShowBanner] = useState(true);
+
+  // Load real posts from Supabase, fallback to mock
+  const loadPosts = async () => {
+    setIsRefreshing(true);
+    try {
+      const realPosts = await fetchPosts();
+      if (realPosts && realPosts.length > 0) {
+        setPosts(realPosts);
+      } else {
+        setPosts(MOCK_POSTS);
+      }
+    } catch {
+      setPosts(MOCK_POSTS);
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    loadPosts();
+  }, []);
+
+  // Get user avatar with fallback
+  const userAvatar = user?.avatarUrl || (user ? getDefaultAvatar(user.name, role || 'student') : '');
+
+  // Profile completion check
+  const isProfileIncomplete = isAuthenticated && user && (!user.bio || !(user as any).researchInterests?.length);
 
   const isCorporate = (author: ScholarProfile | CorporateProfile): author is CorporateProfile => {
     return (author as CorporateProfile).industry !== undefined;
@@ -126,9 +158,9 @@ export const Feed: React.FC<FeedProps> = ({ onSignupRequest, onViewProfile }) =>
             <div className="h-24 bg-gradient-to-r from-slate-700 to-slate-900 rounded-t-xl relative overflow-hidden">
               <div className="absolute -bottom-10 left-4 p-1 bg-white rounded-full z-10">
                 {isAuthenticated && user ? (
-                   <img src={user.avatarUrl} className="h-20 w-20 rounded-full object-cover border-2 border-white" alt="User Avatar" />
+                   <img src={userAvatar} className="h-20 w-20 rounded-full object-cover border-2 border-white" alt="User Avatar" />
                 ) : (
-                   <div className="h-20 w-20 rounded-full bg-slate-200 border-2 border-white"></div>
+                   <img src="https://api.dicebear.com/7.x/initials/svg?seed=Guest&backgroundColor=94a3b8" className="h-20 w-20 rounded-full object-cover border-2 border-white" alt="Guest" />
                 )}
               </div>
             </div>
@@ -209,13 +241,28 @@ export const Feed: React.FC<FeedProps> = ({ onSignupRequest, onViewProfile }) =>
 
         {/* CENTER COLUMN: Feed (6 cols) */}
         <div className="col-span-1 lg:col-span-6 space-y-6">
+
+          {/* Profile Completion Banner */}
+          {isProfileIncomplete && showBanner && (
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-amber-800">Complete your profile to get discovered</p>
+                <p className="text-xs text-amber-600 mt-0.5">Add your research interests and bio to attract collaborators and opportunities.</p>
+              </div>
+              <button onClick={() => setShowBanner(false)} className="text-amber-400 hover:text-amber-600">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+          )}
+
           {/* Composer Widget */}
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 p-4">
             <div className="flex gap-4">
               <img 
                 alt="User" 
                 className="h-10 w-10 rounded-full object-cover" 
-                src={isAuthenticated && user ? user.avatarUrl : "https://via.placeholder.com/40"} 
+                src={userAvatar || "https://api.dicebear.com/7.x/initials/svg?seed=Guest"} 
               />
               <div className="flex-1">
                 <div 

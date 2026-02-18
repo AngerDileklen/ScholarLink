@@ -12,6 +12,7 @@ import { ConnectModal } from './components/ConnectModal';
 import { ConferenceCompanion } from './components/ConferenceCompanion';
 import { MapSearch } from './components/MapSearch';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { OnboardingModal } from './components/OnboardingModal';
 import { MOCK_SCHOLARS, MOCK_EVENTS } from './services/mockData';
 import { ScholarProfile, SearchFilters } from './types';
 import { calculateDistanceKm } from './utils/geo';
@@ -21,7 +22,7 @@ import {
 } from 'lucide-react';
 
 const AppContent: React.FC = () => {
-  const { isAuthenticated, user, logout, role } = useAuth();
+  const { isAuthenticated, user, logout, role, hasCompletedOnboarding, completeOnboarding } = useAuth();
 
   // Navigation State
   const [view, setView] = useState<'feed' | 'discover' | 'dashboard' | 'opportunities' | 'profile' | 'conference'>('feed');
@@ -370,6 +371,10 @@ const AppContent: React.FC = () => {
       {isAuthenticated && <ChatWidget />}
 
       {/* Modals */}
+      <OnboardingModal 
+        isOpen={isAuthenticated && !hasCompletedOnboarding} 
+        onComplete={completeOnboarding} 
+      />
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} defaultTab={authMode} />
 
       {selectedScholar && (

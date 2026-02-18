@@ -8,9 +8,11 @@ interface AuthContextType {
   isAuthenticated: boolean;
   role: UserRole | null;
   loading: boolean;
+  hasCompletedOnboarding: boolean;
   login: (email: string, password: string) => Promise<void>;
   signup: (email: string, password: string, name: string, role: UserRole) => Promise<void>;
   logout: () => Promise<void>;
+  completeOnboarding: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -19,6 +21,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<ScholarProfile | CorporateProfile | null>(null);
   const [role, setRole] = useState<UserRole | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(false);
+
+  const completeOnboarding = () => {
+    setHasCompletedOnboarding(true);
+  };
 
   useEffect(() => {
     // Check for existing session
@@ -147,7 +154,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, role, loading, login, signup, logout }}>
+    <AuthContext.Provider value={{ 
+      user, 
+      isAuthenticated: !!user, 
+      role, 
+      loading, 
+      hasCompletedOnboarding,
+      login, 
+      signup, 
+      logout,
+      completeOnboarding 
+    }}>
       {children}
     </AuthContext.Provider>
   );
