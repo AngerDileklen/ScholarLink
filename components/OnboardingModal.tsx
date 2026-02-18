@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { X, User, GraduationCap, BookOpen, Settings, Check, ArrowRight, Building2, Sparkles } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, User, GraduationCap, BookOpen, Settings, Check, ArrowRight, Building2, Sparkles, Github, Linkedin, Globe, AlertCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { upsertProfile } from '../services/api';
 import { UserRole } from '../types';
@@ -48,7 +48,14 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onComp
     seekingSupervisor: false,
     companyName: '',
     industry: '',
+    // Social links
+    githubUrl: '',
+    linkedinUrl: '',
+    researchgateUrl: '',
+    orcidId: '',
+    websiteUrl: '',
   });
+  const [validationError, setValidationError] = useState('');
 
   // Update name when user loads
   useEffect(() => {
@@ -62,6 +69,25 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onComp
   const completionPercent = Math.round((step / totalSteps) * 100);
 
   const handleNext = async () => {
+    setValidationError('');
+    
+    // Step 1 validation: required fields
+    if (step === 1) {
+      const institution = userRole === 'corporate' ? formData.companyName : formData.institution;
+      if (!formData.name.trim()) { setValidationError('Full name is required.'); return; }
+      if (!formData.title.trim() && userRole !== 'corporate') { setValidationError('Title / Position is required.'); return; }
+      if (!institution.trim()) { setValidationError(`${userRole === 'corporate' ? 'Company name' : 'University / Institution'} is required.`); return; }
+      if (!formData.city.trim()) { setValidationError('City is required.'); return; }
+    }
+    
+    // Step 2 validation: minimum 5 research keywords
+    if (step === 2) {
+      if (formData.researchInterests.length < 5) {
+        setValidationError(`Please add at least 5 research keywords. You have ${formData.researchInterests.length} so far.`);
+        return;
+      }
+    }
+    
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
@@ -467,7 +493,15 @@ export const OnboardingModal: React.FC<OnboardingModalProps> = ({ isOpen, onComp
             </div>
           )}
 
-          {/* Error */}
+          {/* Validation Error */}
+          {validationError && (
+            <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-700 flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              {validationError}
+            </div>
+          )}
+
+          {/* Save Error */}
           {error && (
             <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
               {error}

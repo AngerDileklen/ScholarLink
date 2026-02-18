@@ -155,8 +155,8 @@ export const Feed: React.FC<FeedProps> = ({ onSignupRequest, onViewProfile }) =>
         <div className="hidden lg:block lg:col-span-3 space-y-6">
           {/* User Profile Card */}
           <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-visible relative">
-            <div className="h-24 bg-gradient-to-r from-slate-700 to-slate-900 rounded-t-xl relative overflow-hidden">
-              <div className="absolute -bottom-10 left-4 p-1 bg-white rounded-full z-10">
+            <div className="h-20 bg-gradient-to-r from-slate-700 to-slate-900 rounded-t-xl relative">
+              <div className="absolute -bottom-10 left-4 z-10 p-1 bg-white rounded-full shadow-md">
                 {isAuthenticated && user ? (
                    <img src={userAvatar} className="h-20 w-20 rounded-full object-cover border-2 border-white" alt="User Avatar" />
                 ) : (
@@ -164,7 +164,7 @@ export const Feed: React.FC<FeedProps> = ({ onSignupRequest, onViewProfile }) =>
                 )}
               </div>
             </div>
-            <div className="pt-14 px-4 pb-4">
+            <div className="pt-12 px-4 pb-4">
               {isAuthenticated && user ? (
                 <>
                   <h2 className="text-lg font-bold text-slate-900 leading-tight">{user.name}</h2>

@@ -312,7 +312,25 @@ const AppContent: React.FC = () => {
           />
         )}
 
-        {view === 'discover' && (
+        {view === 'discover' && !isAuthenticated && (
+          <div className="flex flex-col items-center justify-center h-[60vh] text-center px-4">
+            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+              <MapIcon className="w-10 h-10 text-primary" />
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">Discover the Scholar Network</h2>
+            <p className="text-slate-500 max-w-md mb-8">Sign up to search and filter thousands of professors, PhD students, and researchers by topic, location, and availability.</p>
+            <div className="flex gap-3">
+              <button onClick={() => { setAuthMode('signup'); setIsAuthModalOpen(true); }} className="bg-primary hover:bg-primary-hover text-white px-6 py-3 rounded-lg font-bold shadow-sm transition-all">
+                Join ScholarLink
+              </button>
+              <button onClick={() => { setAuthMode('login'); setIsAuthModalOpen(true); }} className="border border-slate-300 text-slate-700 px-6 py-3 rounded-lg font-medium hover:bg-slate-50 transition-all">
+                Log In
+              </button>
+            </div>
+          </div>
+        )}
+
+        {view === 'discover' && isAuthenticated && (
           <div className="flex flex-col h-[calc(100vh-64px)]">
             {/* View Toggle */}
             <div className="bg-white border-b border-slate-200 px-4 py-2 flex items-center justify-between">
@@ -357,7 +375,25 @@ const AppContent: React.FC = () => {
           </div>
         )}
 
-        {view === 'conference' && (
+        {view === 'conference' && !isAuthenticated && (
+          <div className="flex flex-col items-center justify-center h-[60vh] text-center px-4">
+            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mb-6">
+              <Calendar className="w-10 h-10 text-primary" />
+            </div>
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">Academic Events & Conferences</h2>
+            <p className="text-slate-500 max-w-md mb-8">Sign up to browse upcoming conferences, see who's attending, and schedule meetings with researchers before the event starts.</p>
+            <div className="flex gap-3">
+              <button onClick={() => { setAuthMode('signup'); setIsAuthModalOpen(true); }} className="bg-primary hover:bg-primary-hover text-white px-6 py-3 rounded-lg font-bold shadow-sm transition-all">
+                Join ScholarLink
+              </button>
+              <button onClick={() => { setAuthMode('login'); setIsAuthModalOpen(true); }} className="border border-slate-300 text-slate-700 px-6 py-3 rounded-lg font-medium hover:bg-slate-50 transition-all">
+                Log In
+              </button>
+            </div>
+          </div>
+        )}
+
+        {view === 'conference' && isAuthenticated && (
           <ConferenceCompanion
             events={MOCK_EVENTS}
             scholars={scholars}
