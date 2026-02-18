@@ -56,24 +56,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
     }
   };
 
-  // University email domain validation
-  const ACADEMIC_DOMAINS = ['.edu', '.ac.uk', '.ac.', '.edu.', '.uni-', '.univ.', '.university.'];
-  const CORPORATE_ALLOWED = ['gmail.com', 'outlook.com', 'hotmail.com', 'yahoo.com'];
-  
-  const isAcademicEmail = (emailAddr: string): boolean => {
-    const domain = emailAddr.split('@')[1]?.toLowerCase() || '';
-    return ACADEMIC_DOMAINS.some(d => domain.includes(d));
-  };
-
-  const validateEmail = (emailAddr: string, role: string): string => {
-    if (!emailAddr.includes('@')) return 'Please enter a valid email address.';
-    if (mode === 'signup' && role !== 'corporate') {
-      if (!isAcademicEmail(emailAddr)) {
-        return '⚠️ Please use your university email (e.g. name@university.edu or name@uni.ac.uk). Corporate partners may use any email.';
-      }
-    }
-    return '';
-  };
+  // TODO (Future): University email domain validation
+  // Will be implemented via Supabase DB trigger or Edge Function
+  // to check against a curated list of academic domains worldwide.
+  // For now, any valid email is accepted.
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,13 +77,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
         }
         if (password.length < 8) {
           setError('Password must be at least 8 characters.');
-          setLoading(false);
-          return;
-        }
-        // University email check (soft warning for now — will be enforced later)
-        const emailWarning = validateEmail(email, selectedRole);
-        if (emailWarning) {
-          setError(emailWarning);
           setLoading(false);
           return;
         }
