@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { X, GraduationCap, Building2, User } from 'lucide-react';
+import { X, GraduationCap, Building2, User, ArrowLeft, Mail, CheckCircle2 } from 'lucide-react';
 import { UserRole } from '../types';
 import { useAuth } from '../context/AuthContext';
+import { supabase } from '../services/supabase';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -31,8 +32,29 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [error, setError] = useState('');
+  const [forgotMode, setForgotMode] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
 
   if (!isOpen) return null;
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resetEmail.trim()) { setError('Please enter your email address.'); return; }
+    setLoading(true);
+    setError('');
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+        redirectTo: `${window.location.origin}/?reset=true`,
+      });
+      if (error) throw error;
+      setResetSent(true);
+    } catch (err: any) {
+      setError(err.message || 'Failed to send reset email.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // University email domain validation
   const ACADEMIC_DOMAINS = ['.edu', '.ac.uk', '.ac.', '.edu.', '.uni-', '.univ.', '.university.'];
@@ -132,6 +154,58 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
         </div>
 
         <div className="overflow-y-auto p-6">
+
+          {/* FORGOT PASSWORD MODE */}
+          {forgotMode ? (
+            <div>
+              <button onClick={() => { setForgotMode(false); setResetSent(false); setError(''); }} className="flex items-center gap-1 text-sm text-slate-500 hover:text-primary mb-6">
+                <ArrowLeft className="w-4 h-4" /> Back to login
+              </button>
+
+              {resetSent ? (
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <CheckCircle2 className="w-8 h-8 text-green-600" />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">Check your inbox</h3>
+                  <p className="text-sm text-slate-500">We sent a password reset link to <strong>{resetEmail}</strong>. Click the link in the email to set a new password.</p>
+                  <button onClick={() => { setForgotMode(false); setResetSent(false); }} className="mt-6 text-sm font-semibold text-primary hover:underline">
+                    Back to login
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleForgotPassword} className="space-y-4">
+                  <div className="text-center mb-6">
+                    <div className="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <Mail className="w-7 h-7 text-primary" />
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-900">Reset your password</h3>
+                    <p className="text-sm text-slate-500 mt-1">Enter your email and we'll send you a reset link.</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
+                    <input
+                      type="email"
+                      required
+                      value={resetEmail}
+                      onChange={e => setResetEmail(e.target.value)}
+                      className="w-full px-4 py-3 rounded-lg border border-slate-300 focus:ring-2 focus:ring-primary focus:border-primary outline-none text-slate-900 placeholder:text-slate-400"
+                      placeholder="name@university.edu"
+                    />
+                  </div>
+                  {error && <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">{error}</div>}
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full bg-primary hover:bg-primary-hover text-white font-bold py-3.5 rounded-lg shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+                  >
+                    {loading ? <><div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Sending...</> : 'Send Reset Link'}
+                  </button>
+                </form>
+              )}
+            </div>
+          ) : (
+          <>
           {/* Role Selection */}
           <div className="mb-6">
             <label className="block text-sm font-semibold text-slate-700 mb-3 uppercase tracking-wider">
@@ -221,11 +295,24 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
             </button>
           </form>
 
+          {/* Forgot password link — only on login */}
+          {mode === 'login' && (
+            <div className="text-center mt-3">
+              <button
+                type="button"
+                onClick={() => { setForgotMode(true); setError(''); setResetEmail(email); }}
+                className="text-sm text-slate-400 hover:text-primary hover:underline"
+              >
+                Forgot your password?
+              </button>
+            </div>
+          )}
+
           {/* Switcher */}
           <div className="mt-6 text-center pt-4 border-t border-slate-100">
             <p className="text-sm text-slate-600">
               {mode === 'login' ? "Don't have an account?" : "Already have an account?"}
-              <button 
+              <button
                 onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
                 className="ml-2 font-bold text-primary hover:underline"
               >
@@ -233,6 +320,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, defaultTa
               </button>
             </p>
           </div>
+          </>
+          )}
         </div>
       </div>
     </div>

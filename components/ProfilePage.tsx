@@ -27,49 +27,52 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ scholar, onBack, onCon
         {/* Hero Header - Fixed overflow for avatar */}
         <div className="bg-white rounded-xl shadow-sm border border-slate-200 mb-8 relative group">
            {/* Cover Image */}
-           <div className="h-48 w-full relative rounded-t-xl">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary to-blue-900 mix-blend-multiply z-10 opacity-90"></div>
+           <div className="h-36 w-full relative rounded-t-xl overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary to-blue-900 opacity-95" />
               <div className="absolute top-4 right-4 z-20 flex gap-2">
                  <button className="bg-white/10 backdrop-blur-md hover:bg-white/20 text-white p-2 rounded-lg transition-colors border border-white/10">
                     <Share2 className="w-4 h-4" />
                  </button>
               </div>
            </div>
-           
-           <div className="px-6 sm:px-8 pb-6 relative">
-              <div className="flex flex-col sm:flex-row items-end -mt-16 sm:-mt-20 gap-6">
-                 {/* Avatar - Fixed positioning with proper sizing */}
-                 <div className="relative z-20 shrink-0 -mt-8 sm:mt-0">
-                    <div className="h-32 w-32 sm:h-40 sm:w-40 rounded-xl ring-4 ring-white bg-white shadow-lg" style={{ marginTop: '-2rem' }}>
-                       <img src={scholar.avatarUrl} className="w-full h-full object-cover rounded-xl" alt={scholar.name} />
+
+           {/* Profile Info — below cover, not overlapping */}
+           <div className="px-6 sm:px-8 pb-6">
+              {/* Avatar row */}
+              <div className="flex items-end gap-4 -mt-12 mb-4">
+                 <div className="relative shrink-0">
+                    <div className="h-24 w-24 sm:h-28 sm:w-28 rounded-xl ring-4 ring-white bg-white shadow-lg overflow-hidden">
+                       <img src={scholar.avatarUrl} className="w-full h-full object-cover" alt={scholar.name} />
                     </div>
                     {scholar.acceptingStudents && (
-                       <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-1.5 border-2 border-white shadow-sm">
-                          <div className="bg-green-500 w-3 h-3 rounded-full"></div>
+                       <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-1 border-2 border-white shadow-sm">
+                          <div className="bg-green-500 w-3 h-3 rounded-full" />
                        </div>
                     )}
                  </div>
-                 
-                 {/* Name and Info - Fixed margin issue */}
-                 <div className="flex-1 pt-6 sm:pt-0 text-center sm:text-left min-w-0 w-full">
-                    <div className="flex items-center justify-center sm:justify-start gap-2 mb-3">
-                       <h1 className="text-3xl font-bold text-slate-900 leading-tight truncate">{scholar.name}</h1>
-                       {scholar.verified && <span className="text-primary font-bold text-xl shrink-0">✓</span>}
-                    </div>
-                    <div className="text-slate-600 font-medium text-lg mb-4 leading-snug">{scholar.title}</div>
-                    <div className="flex flex-wrap items-center justify-center sm:justify-start gap-y-2 gap-x-4 text-sm text-slate-500">
-                       <span className="flex items-center gap-1 shrink-0"><Building className="w-4 h-4 opacity-70" /> {scholar.university.name}</span>
-                       <span className="flex items-center gap-1 shrink-0"><MapPin className="w-4 h-4 opacity-70" /> {scholar.location.city}, {scholar.location.country}</span>
-                    </div>
-                 </div>
-
-                 <div className="flex gap-3 mt-4 sm:mt-0 w-full sm:w-auto shrink-0">
-                    <button onClick={onConnect} className="flex-1 sm:flex-none bg-primary hover:bg-primary-hover text-white px-6 py-2.5 rounded-lg font-medium shadow-lg shadow-primary/20 transition-all">
+                 {/* Action buttons aligned to bottom of avatar */}
+                 <div className="flex gap-2 ml-auto pb-1">
+                    <button onClick={onConnect} className="bg-primary hover:bg-primary-hover text-white px-5 py-2 rounded-lg font-medium shadow-sm transition-all text-sm">
                        Connect
                     </button>
-                    <button className="flex-1 sm:flex-none bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-6 py-2.5 rounded-lg font-medium transition-all">
+                    <button className="bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 px-5 py-2 rounded-lg font-medium transition-all text-sm">
                        Message
                     </button>
+                 </div>
+              </div>
+
+              {/* Name & Info — clearly below cover photo */}
+              <div>
+                 <div className="flex items-center gap-2 mb-1">
+                    <h1 className="text-2xl font-bold text-slate-900 leading-tight">{scholar.name}</h1>
+                    {scholar.verified && <span className="text-primary font-bold text-lg">✓</span>}
+                 </div>
+                 <p className="text-slate-600 font-medium mb-2">{scholar.title}</p>
+                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-500">
+                    <span className="flex items-center gap-1"><Building className="w-4 h-4 opacity-70" /> {scholar.university.name}</span>
+                    {scholar.location.city && (
+                       <span className="flex items-center gap-1"><MapPin className="w-4 h-4 opacity-70" /> {scholar.location.city}, {scholar.location.country}</span>
+                    )}
                  </div>
               </div>
            </div>
