@@ -15,17 +15,26 @@ export interface DatabaseProfile {
   bio: string | null;
   avatar_url: string | null;
   university_name: string | null;
+  department: string | null;
   location_city: string | null;
   location_country: string | null;
   research_interests: string[] | null;
   accepting_students: boolean;
   funding_available: boolean;
   open_to_industry: boolean;
+  seeking_supervisor: boolean;
   verified: boolean;
   h_index: number;
   citation_count: number;
   role: 'student' | 'professor' | 'corporate';
+  // Social links
+  github_url: string | null;
+  linkedin_url: string | null;
+  researchgate_url: string | null;
+  orcid_id: string | null;
+  website_url: string | null;
   created_at: string;
+  updated_at: string | null;
 }
 
 export interface DatabasePost {
@@ -34,7 +43,7 @@ export interface DatabasePost {
   content: string;
   link_url: string | null;
   link_title: string | null;
-  post_type: 'research' | 'question' | 'opportunity' | 'update';
+  post_type: string;
   likes_count: number;
   comments_count: number;
   created_at: string;
